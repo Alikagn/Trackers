@@ -50,7 +50,6 @@ final class CreatingHabitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupNavigationBar()
     }
     
     init(isHabit value: Bool) {
@@ -76,15 +75,12 @@ private extension CreatingHabitViewController {
         }
     }
     
-    private func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = downButton
-    }
-    
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
     
     func setupNavBar() {
+        navigationItem.leftBarButtonItem = downButton
         navigationItem.title = isHabit ? "Новая привычка" : "Новое нерегулярное событие"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -131,7 +127,6 @@ private extension CreatingHabitViewController {
             color: "ColorSelection12",
             emoji: "🐶",
             schedule: scheduleDay,
-            isRegular: true,
             colorAssetName: "ColorSelection12",
             type: isHabit ? .habit : .irregularEvent
         )
@@ -376,7 +371,7 @@ extension CreatingHabitViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = .ypWhite
+        view.backgroundColor = Colors.white
         setupNavBar()
         stackSubView()
     }

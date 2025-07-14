@@ -23,7 +23,6 @@ final class DataManager {
                     color: "ColorSelection2",
                     emoji: "❤️",
                     schedule: [WeekDay.monday, WeekDay.saturday],
-                    isRegular: true,
                     colorAssetName: "ColorSelection2",
                     type: .habit
                 ),
@@ -39,7 +38,6 @@ final class DataManager {
                     color: "ColorSelection3",
                     emoji: "😻",
                     schedule: [WeekDay.friday, WeekDay.tuesday],
-                    isRegular: true,
                     colorAssetName: "ColorSelection3",
                     type: .habit
                 ),
@@ -49,7 +47,6 @@ final class DataManager {
                     color: "ColorSelection4",
                     emoji: "🌺",
                     schedule: [WeekDay.wednesday, WeekDay.monday, WeekDay.thursday],
-                    isRegular: true,
                     colorAssetName: "ColorSelection4",
                     type: .habit
                 ),
@@ -59,7 +56,6 @@ final class DataManager {
                     color: "ColorSelection5",
                     emoji: "❤️",
                     schedule: [WeekDay.thursday],
-                    isRegular: true,
                     colorAssetName: "ColorSelection5",
                     type: .habit
                 )
@@ -75,7 +71,6 @@ final class DataManager {
                     color: "ColorSelection8",
                     emoji: "🙂",
                     schedule: [WeekDay.sunday, WeekDay.tuesday],
-                    isRegular: true,
                     colorAssetName: "ColorSelection8",
                     type: .habit
                 ),
@@ -85,7 +80,6 @@ final class DataManager {
                     color:"ColorSelection9",
                     emoji: "😪",
                     schedule: [WeekDay.saturday],
-                    isRegular: true,
                     colorAssetName: "ColorSelection9",
                     type: .habit
                 )

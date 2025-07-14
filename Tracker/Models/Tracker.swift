@@ -13,7 +13,6 @@ struct Tracker {
     let color: String
     let emoji: String
     let schedule: [WeekDay]?
-    let isRegular: Bool
     let colorAssetName: String
     let type: TypeTrackers
 }

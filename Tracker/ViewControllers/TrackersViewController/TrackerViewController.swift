@@ -45,38 +45,6 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
         let calendar = Calendar.current
         return calendar.isDateInToday(date)
     }
-    
-    func reloadVisibleCategories() {
-         let calendar = Calendar.current
-         let filterText = (searchTextField.text ?? String()).lowercased()
-         let today = calendar.component(.weekday, from: datePicker.date)
-         
-        visibleCategories = categories.compactMap { category in
-             let trackers = category.trackers.filter { tracker in
-                 let textCondition = filterText.isEmpty ||
-                 tracker.name.lowercased().contains(filterText)
-                 var dateCondition = false
-                 switch tracker.type {
-                 case .habit:
-                     dateCondition = ((tracker.schedule?.contains { weekDay in
-                         return today == weekDay.calendarIndex
-                     }) != nil)
-                 case .irregularEvent:
-                     if isCurrentDate(datePicker.date) {
-                         let creationDate = Date()
-                         dateCondition = calendar.isDate(
-                             creationDate,
-                             inSameDayAs: datePicker.date
-                         )
-                     }
-                 }
-                 
-                 return textCondition && dateCondition
-             }
-             return trackers.isEmpty ? nil : TrackerCategory(id: category.id, title: category.title, trackers: trackers)
-         }
-        collectionView.reloadData()
-     }
      
     private var filteredCategories: [TrackerCategory] {
         categories.map { category in
@@ -210,7 +178,7 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
     }
     
     private func isTrackerVisible(_ tracker: Tracker, for date: Date) -> Bool {
-        guard tracker.isRegular else { return true }
+        guard tracker.type == .habit else { return true }
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: date)
         return tracker.schedule?.contains { $0.calendarIndex == weekday } ?? false
@@ -227,7 +195,7 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
     }
 
     @objc private func addButtonTapped() {
-        let creatingVC = CreatingTrackerViewController() //HabitCreationViewController()
+        let creatingVC = CreatingTrackerViewController()
         creatingVC.modalPresentationStyle = .formSheet
         
         creatingVC.onTrackerCreated = { [weak self] newTracker in
@@ -262,7 +230,6 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
     @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
         currentDate = sender.date
         print("Выбранная дата: \(currentDate)")
-        reloadVisibleCategories()
     }
 }
 
@@ -301,7 +268,6 @@ extension TrackersViewController {
 extension TrackersViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        reloadVisibleCategories()
         return true
     }
 }

@@ -20,13 +20,6 @@ class StatisticViewController: UIViewController, UICollectionViewDelegate {
         return label
     }()
     
-    private lazy var cometImageView: UIImageView = {
-        let profileImage = UIImage(named: "ArrDwn")
-        let imageView = UIImageView(image: profileImage)
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -52,7 +45,7 @@ class StatisticViewController: UIViewController, UICollectionViewDelegate {
     // MARK: - Private methods
         private func setupView() {
             
-            [questionLabel, cometImageView].forEach
+            [questionLabel].forEach
             {
                 $0.translatesAutoresizingMaskIntoConstraints = false
                 view.addSubview($0)
@@ -65,10 +58,6 @@ class StatisticViewController: UIViewController, UICollectionViewDelegate {
 extension StatisticViewController {
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            cometImageView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            cometImageView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
-            cometImageView.widthAnchor.constraint(equalToConstant: 80),
-            cometImageView.heightAnchor.constraint(equalToConstant: 80),
                 questionLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
                 questionLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
         ])

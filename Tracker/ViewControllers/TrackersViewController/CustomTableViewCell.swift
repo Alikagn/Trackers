@@ -130,6 +130,6 @@ extension CustomTableViewCell {
     }
     
     func setupUI() {
-        backgroundColor = .ypBackground
+        backgroundColor = Colors.background
     }
 }

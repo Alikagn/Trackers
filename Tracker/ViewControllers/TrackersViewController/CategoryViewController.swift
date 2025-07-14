@@ -50,7 +50,6 @@ final class CategoryViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         updateUIForCategory()
-        setupNavigationBar()
     }
 }
 
@@ -58,15 +57,12 @@ final class CategoryViewController: UIViewController {
 
 private extension CategoryViewController {
     
-    private func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = downButton
-    }
-    
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
     
     func setupNavBar() {
+        navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Категория"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -250,7 +246,7 @@ extension CategoryViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = .ypWhite
+        view.backgroundColor = Colors.white
         setupNavBar()
     }
 }

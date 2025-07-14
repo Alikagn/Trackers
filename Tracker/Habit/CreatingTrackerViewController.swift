@@ -39,17 +39,13 @@ final class CreatingTrackerViewController: UIViewController {
         layout(ui)
         return ui
     }()
-    
-    private func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = downButton
-    }
+
     
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupNavigationBar()
     }
     
    
@@ -63,6 +59,7 @@ final class CreatingTrackerViewController: UIViewController {
 private extension CreatingTrackerViewController {
     
     func setupNavBar() {
+        navigationItem.leftBarButtonItem = downButton
         title = "Создание трекера"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -175,7 +172,7 @@ extension CreatingTrackerViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = .ypWhite
+        view.backgroundColor = Colors.white
         setupNavBar()
         print(ui.habitButton.titleLabel?.text ?? String())
     }

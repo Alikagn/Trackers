@@ -45,23 +45,19 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupNavigationBar()
     }
 }
 
 // MARK: - Private Methods
 
 private extension NewCategoryViewController {
-   
-    private func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = downButton
-    }
     
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
     
     func setupNavBar() {
+        navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Новая категория"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -165,7 +161,7 @@ extension NewCategoryViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = .ypWhite
+        view.backgroundColor = Colors.white
         setupNavBar()
         print(ui.newCategoryTextField.text ?? String())
     }
