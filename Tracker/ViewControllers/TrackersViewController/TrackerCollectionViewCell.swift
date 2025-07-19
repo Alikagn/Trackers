@@ -78,7 +78,7 @@ final class TrackerCell: UICollectionViewCell {
         self.isCompletedToday = isCompletedToday
         self.currentDate = currentDate
         
-        containerView.backgroundColor = UIColor(named: tracker.color)
+        containerView.backgroundColor = tracker.color //UIColor(named: tracker.color)
         emojiLabel.text = tracker.emoji
         titleLabel.text = tracker.name
         daysLabel.text = formattedDaysCount(completedDays)

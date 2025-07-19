@@ -38,7 +38,6 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
     
     func reloadData() {
         categories = dataManager.categories
-        print(("categories: \(categories.count)"))
     }
     
     func isCurrentDate(_ date: Date) -> Bool {
@@ -151,8 +150,7 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        self.view.backgroundColor = UIColor.white
-        self.title = "Трекеры"
+        self.view.backgroundColor = Colors.white
         setupView()
         setupNavigationBar()
         setupKeyboardHandler()
@@ -194,38 +192,14 @@ class TrackersViewController: UIViewController, UICollectionViewDelegate {
         }
     }
 
-    @objc private func addButtonTapped() {
-        let creatingVC = CreatingTrackerViewController()
-        creatingVC.modalPresentationStyle = .formSheet
-        
-        creatingVC.onTrackerCreated = { [weak self] newTracker in
-            guard let self = self else { return }
-           
-            if let firstCategoryIndex = self.categories.firstIndex(where: { $0.title == "Радостные мелочи" }) {
-                let oldCategory = self.categories[firstCategoryIndex]
-                let newCategory = TrackerCategory(
-                    id: oldCategory.id,
-                    title: oldCategory.title,
-                    trackers: oldCategory.trackers + [newTracker]
-                )
-                self.categories = self.categories.enumerated().map { index, category in
-                    index == firstCategoryIndex ? newCategory : category
-                }
-            } else {
-                let newCategory = TrackerCategory(
-                    id: UUID(),
-                    title: "Радостные мелочи",
-                    trackers: [newTracker]
-                )
-                self.categories.append(newCategory)
-            }
-            self.collectionView.reloadData()
-            self.isEmptyState = self.filteredCategories.isEmpty
-         
-        }
-        
-        present(UINavigationController(rootViewController: creatingVC), animated: true)
-    }
+    
+     @objc func addButtonTapped() {
+         let controller = CreatingTrackerViewController()
+         controller.delegate = self
+         let navigationController = UINavigationController(rootViewController: controller)
+         navigationController.modalPresentationStyle = .popover
+         self.present(navigationController, animated: true)
+     }
     
     @objc private func datePickerValueChanged(_ sender: UIDatePicker) {
         currentDate = sender.date
@@ -366,6 +340,39 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.bounds.width, height: 32)
+    }
+}
+
+// MARK: - TrackersViewControllerDelegate
+
+extension TrackersViewController: TrackersViewControllerDelegate {
+    func tracker(tracker: Tracker, for category: String) {
+        var categoryAdded = false
+        for oldCategory in categories {
+            if oldCategory.title == category {
+                renewCategory(for: oldCategory, tracker)
+                categoryAdded = true
+                break
+            }
+        }
+        
+        if !categoryAdded {
+            categories.append(TrackerCategory(id: UUID(), title: category, trackers: [tracker]))
+        }
+        self.collectionView.reloadData()
+        self.isEmptyState = self.filteredCategories.isEmpty
+    }
+    
+    func renewCategory(for oldCategory: TrackerCategory, _ tracker: Tracker) {
+        if let oldCategoryIndex: Int = visibleCategories.firstIndex(of: oldCategory) {
+            let updatedTrackers = oldCategory.trackers + [tracker]
+            let newCategory = TrackerCategory(id: oldCategory.id,
+                title: oldCategory.title,
+                trackers: updatedTrackers
+            )
+            visibleCategories.remove(at: oldCategoryIndex)
+            visibleCategories.insert(newCategory, at: oldCategoryIndex)
+        }
     }
 }
 

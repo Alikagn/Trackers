@@ -61,7 +61,7 @@ private extension ScheduleViewController {
     }
     
     func setupNavBar() {
-        navigationItem.leftBarButtonItem = downButton
+        //navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Расписание"
         
         if let navigationBar = navigationController?.navigationBar {

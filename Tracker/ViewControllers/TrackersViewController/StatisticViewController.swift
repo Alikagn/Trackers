@@ -30,10 +30,7 @@ class StatisticViewController: UIViewController, UICollectionViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.view.backgroundColor = Colors.white
-        self.title = "Статистика"
-    
         setupView()
     }
     

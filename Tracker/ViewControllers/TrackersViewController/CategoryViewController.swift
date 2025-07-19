@@ -4,7 +4,6 @@
 //
 //  Created by Dmitry Batorevich on 12.07.2025.
 //
-
 import UIKit
 
 // MARK: - CategoryViewControllerDelegate
@@ -23,18 +22,6 @@ final class CategoryViewController: UIViewController {
     var contentsCategory: [String] = []
     
     // MARK: Private Property
-    
-    private lazy var downButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "arrowshape.down") ?? UIImage(systemName: "arrowshape.down"),
-            style: .plain,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        button.tintColor = Colors.black
-        button.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
-        return button
-    }()
     
     private var selectedCategories: Set<String> = []
     
@@ -57,12 +44,7 @@ final class CategoryViewController: UIViewController {
 
 private extension CategoryViewController {
     
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
-    }
-    
     func setupNavBar() {
-        navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Категория"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -246,7 +228,7 @@ extension CategoryViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = Colors.white
+        view.backgroundColor = .ypWhite
         setupNavBar()
     }
 }

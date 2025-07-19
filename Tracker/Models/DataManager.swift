@@ -20,7 +20,7 @@ final class DataManager {
                 Tracker(
                     id: UUID(),
                     name: "Кормить кошек",
-                    color: "ColorSelection2",
+                    color: .colorSelection2,
                     emoji: "❤️",
                     schedule: [WeekDay.monday, WeekDay.saturday],
                     colorAssetName: "ColorSelection2",
@@ -35,7 +35,7 @@ final class DataManager {
                 Tracker(
                     id: UUID(),
                     name: "Пришла посылка",
-                    color: "ColorSelection3",
+                    color: .colorSelection3,
                     emoji: "😻",
                     schedule: [WeekDay.friday, WeekDay.tuesday],
                     colorAssetName: "ColorSelection3",
@@ -44,7 +44,7 @@ final class DataManager {
                 Tracker(
                     id: UUID(),
                     name: "Спортивные соревнования",
-                    color: "ColorSelection4",
+                    color: .colorSelection4,
                     emoji: "🌺",
                     schedule: [WeekDay.wednesday, WeekDay.monday, WeekDay.thursday],
                     colorAssetName: "ColorSelection4",
@@ -53,7 +53,7 @@ final class DataManager {
                 Tracker(
                     id: UUID(),
                     name: "Встреча с друзьями",
-                    color: "ColorSelection5",
+                    color: .colorSelection5,
                     emoji: "❤️",
                     schedule: [WeekDay.thursday],
                     colorAssetName: "ColorSelection5",
@@ -68,7 +68,7 @@ final class DataManager {
                 Tracker(
                     id: UUID(),
                     name: "Рабочее настроение",
-                    color: "ColorSelection8",
+                    color: .colorSelection8,
                     emoji: "🙂",
                     schedule: [WeekDay.sunday, WeekDay.tuesday],
                     colorAssetName: "ColorSelection8",
@@ -77,7 +77,7 @@ final class DataManager {
                 Tracker(
                     id: UUID(),
                     name: "Высокая активность",
-                    color:"ColorSelection9",
+                    color:.colorSelection9,
                     emoji: "😪",
                     schedule: [WeekDay.saturday],
                     colorAssetName: "ColorSelection9",

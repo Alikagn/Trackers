@@ -59,7 +59,7 @@ final class CreatingTrackerViewController: UIViewController {
 private extension CreatingTrackerViewController {
     
     func setupNavBar() {
-        navigationItem.leftBarButtonItem = downButton
+       // navigationItem.leftBarButtonItem = downButton
         title = "Создание трекера"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -72,6 +72,7 @@ private extension CreatingTrackerViewController {
     
     @objc func didTapHabitButton() {
         let controller = CreatingHabitViewController(isHabit: true)
+        // input
         let navigationController = UINavigationController(rootViewController: controller)
         controller.delegate = self
         navigationController.modalPresentationStyle = .popover
@@ -88,6 +89,7 @@ private extension CreatingTrackerViewController {
     
 }
 
+
 // MARK: - CreatingTrackerViewControllerDelegate
 
 extension CreatingTrackerViewController: CreatingTrackerViewControllerDelegate {
@@ -99,6 +101,7 @@ extension CreatingTrackerViewController: CreatingTrackerViewControllerDelegate {
         }
     }
 }
+
 
 // MARK: - UI Configuring
 

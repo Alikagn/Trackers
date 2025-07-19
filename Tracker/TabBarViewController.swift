@@ -5,57 +5,83 @@
 //  Created by Dmitry Batorevich on 16.06.2025.
 //
 
-import UIKit
+ import UIKit
 
-final class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
-   
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupTabs()
-        setupAppearance()
-    }
-    
-    private func setupTabs() {
-        
-        // Trackers
-        let tabTracker = TrackersViewController()
-        let tabOneBarItem = UITabBarItem(
-            title: "Трекер",
-            image: UIImage(named: "trackers"),
-            selectedImage: nil
-        )
-        
-        tabTracker.tabBarItem = tabOneBarItem
-        let trackersNavVC = UINavigationController(rootViewController: tabTracker)
-        
-        // Statistics
-        let tabStatistic = StatisticViewController()
-        let tabTwoBarItem = UITabBarItem(
-            title: "Статистика",
-            image: UIImage(named: "stats"),
-            selectedImage: nil
-        )
-        
-        tabStatistic.tabBarItem = tabTwoBarItem
-        let statisticsNavVC = UINavigationController(rootViewController: tabStatistic)
-        viewControllers = [trackersNavVC, statisticsNavVC]
-    }
-    
-    private func setupAppearance() {
-        let topline = CALayer()
-        topline.frame = CGRect(x: 0, y: 0, width: self.tabBar.frame.width, height: 1)
-        topline.backgroundColor = UIColor.gray.cgColor
-        self.delegate = self
-        self.tabBar.backgroundColor = UIColor.white
-        self.tabBar.layer.masksToBounds = true
-        self.tabBar.layer.addSublayer(topline)
-    }
-    
-    // UITabBarControllerDelegate method
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print("Выбрано: \(String(describing: viewController.title))")
-    }
-}
+ // MARK: - TabBarController
+
+ final class TabBarController: UITabBarController, UITabBarControllerDelegate {
+     
+     // MARK: Lifecycle
+     
+     override func viewDidLoad() {
+         super.viewDidLoad()
+         self.delegate = self
+         setupViewControllers()
+         setupUI()
+     }
+     
+     // UITabBarControllerDelegate method
+     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+         print("Выбрано: \(String(describing: viewController.title))")
+     }
+ }
+
+ // MARK: - Private Methods
+
+ private extension TabBarController {
+     func setupViewControllers() {
+         let trackersVC = TrackersViewController()
+         let trackersNavVC = UINavigationController(rootViewController: trackersVC)
+         trackersVC.tabBarItem = UITabBarItem(
+             title: "Трекеры",
+             image: ImageConstants.tabTrackerActive,
+             selectedImage: nil
+         )
+         
+         let statisticsVC = StatisticViewController()
+         let statisticsNavVC = UINavigationController(rootViewController: statisticsVC)
+         statisticsNavVC.navigationItem.titleView = UIView()
+         statisticsVC.tabBarItem = UITabBarItem(
+             title: "Статистика",
+             image: ImageConstants.tabStatisticActive,
+             selectedImage: nil
+         )
+         self.viewControllers = [trackersNavVC, statisticsNavVC]
+     }
+ }
+
+ // MARK: - UI Configuring
+
+ private extension TabBarController {
+     func setupUI() {
+         view.backgroundColor = Colors.white
+         separator()
+     }
+     
+     func separator() {
+         let separator = UIView(frame: CGRect(
+             x: 0,
+             y: -0.5,
+             width: tabBar.frame.width,
+             height: 1
+         ))
+         separator.backgroundColor = Colors.gray
+         separator.backgroundColor?.withAlphaComponent(20)
+         tabBar.addSubview(separator)
+     }
+ }
+
+ // MARK: - Constants
+
+ private extension TabBarController {
+     
+     // MARK: ImageConstants
+     
+     enum ImageConstants {
+         static let tabTrackerActive = UIImage(named: "trackers")
+         static let tabStatisticActive = UIImage(named: "stats")
+     }
+ }
 
 // MARK: FontsConstants
 
@@ -65,7 +91,6 @@ enum FontsConstants {
     static let searchTextField: UIFont = UIFont.systemFont(ofSize: 17, weight: .regular)
     static let cometTextLabel: UIFont = UIFont.systemFont(ofSize: 12, weight: .medium)
 }
-
 /*
  override func viewDidLoad() {
      super.viewDidLoad()
@@ -81,3 +106,4 @@ enum FontsConstants {
  // Продолжать добавлять другие линии для разделения элементов вкладки...
  }
  */
+

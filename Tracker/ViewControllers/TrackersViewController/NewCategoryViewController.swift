@@ -57,7 +57,7 @@ private extension NewCategoryViewController {
     }
     
     func setupNavBar() {
-        navigationItem.leftBarButtonItem = downButton
+       // navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Новая категория"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -89,9 +89,9 @@ extension NewCategoryViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         ui.newCategoryButton.isEnabled = isSubmitButtonEnabled()
         if ui.newCategoryButton.isEnabled {
-            ui.newCategoryButton.backgroundColor = .ypBlack
+            ui.newCategoryButton.backgroundColor = Colors.black
         } else {
-            ui.newCategoryButton.backgroundColor = .ypGray
+            ui.newCategoryButton.backgroundColor = Colors.gray
         }
         return true
     }
@@ -114,9 +114,10 @@ extension NewCategoryViewController {
         
         let newCategoryTextField = UITextField()
         newCategoryTextField.translatesAutoresizingMaskIntoConstraints = false
-        newCategoryTextField.placeholder = "  Введите название категории"
+        newCategoryTextField.placeholder = "Введите название категории"
         newCategoryTextField.layer.cornerRadius = 16
-        newCategoryTextField.backgroundColor = .ypBackground
+        newCategoryTextField.leftPadding(16)
+        newCategoryTextField.backgroundColor = Colors.background
         newCategoryTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
         newCategoryTextField.delegate = self
         view.addSubview(newCategoryTextField)
@@ -125,9 +126,9 @@ extension NewCategoryViewController {
         newCategoryButton.translatesAutoresizingMaskIntoConstraints = false
         newCategoryButton.isEnabled = false
         newCategoryButton.layer.cornerRadius = 16
-        newCategoryButton.backgroundColor = .ypGray
+        newCategoryButton.backgroundColor = Colors.gray
         newCategoryButton.setTitle("Добавить категорию", for: .normal)
-        newCategoryButton.setTitleColor(.ypWhite, for: .normal)
+        newCategoryButton.setTitleColor(Colors.white, for: .normal)
         newCategoryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         newCategoryButton.addTarget(
             self,

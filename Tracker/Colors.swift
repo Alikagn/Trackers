@@ -26,3 +26,4 @@ enum Colors {
         return (1...18).compactMap { UIColor(named: "Color selection \($0)") }
     }()
 }
+
