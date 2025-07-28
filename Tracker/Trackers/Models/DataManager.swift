@@ -14,77 +14,67 @@ final class DataManager {
     
     var categories: [TrackerCategory] = [
         TrackerCategory(
-            id: UUID(),
-            title: "Домашний уют",
+            headingCategory: "Домашний уют",
             trackers: [
                 Tracker(
-                    id: UUID(),
-                    name: "Кормить кошек",
-                    color: .colorSelection2,
+                    trackerID: UUID(),
+                    name: "Поливать растения",
+                    color: .colorSelection5,
                     emoji: "❤️",
                     schedule: [WeekDay.monday, WeekDay.saturday],
-                    colorAssetName: "ColorSelection2",
                     type: .habit
                 ),
             ]
         ),
         TrackerCategory(
-            id: UUID(),
-            title: "Радостные мелочи",
+            headingCategory: "Радостные мелочи",
             trackers: [
                 Tracker(
-                    id: UUID(),
-                    name: "Пришла посылка",
-                    color: .colorSelection3,
+                    trackerID: UUID(),
+                    name: "Кошка заслонила камеру на созвоне",
+                    color: .colorSelection2,
                     emoji: "😻",
                     schedule: [WeekDay.friday, WeekDay.tuesday],
-                    colorAssetName: "ColorSelection3",
                     type: .habit
                 ),
                 Tracker(
-                    id: UUID(),
-                    name: "Спортивные соревнования",
-                    color: .colorSelection4,
+                    trackerID: UUID(),
+                    name: "Бабушка прислала открытку в вотсапе",
+                    color: .colorSelection1,
                     emoji: "🌺",
                     schedule: [WeekDay.wednesday, WeekDay.monday, WeekDay.thursday],
-                    colorAssetName: "ColorSelection4",
                     type: .habit
                 ),
                 Tracker(
-                    id: UUID(),
-                    name: "Встреча с друзьями",
-                    color: .colorSelection5,
+                    trackerID: UUID(),
+                    name: "Свидания в апреле",
+                    color: .colorSelection14,
                     emoji: "❤️",
                     schedule: [WeekDay.thursday],
-                    colorAssetName: "ColorSelection5",
-                    type: .habit
+                    type: .irregularEvent
                 )
             ]
         ),
         TrackerCategory(
-            id: UUID(),
-            title: "Самочувствие",
+            headingCategory: "Самочувствие",
             trackers: [
                 Tracker(
-                    id: UUID(),
-                    name: "Рабочее настроение",
-                    color: .colorSelection8,
+                    trackerID: UUID(),
+                    name: "Хорошее настроение",
+                    color: .colorSelection16,
                     emoji: "🙂",
                     schedule: [WeekDay.sunday, WeekDay.tuesday],
-                    colorAssetName: "ColorSelection8",
                     type: .habit
                 ),
                 Tracker(
-                    id: UUID(),
-                    name: "Высокая активность",
-                    color:.colorSelection9,
+                    trackerID: UUID(),
+                    name: "Легкая тревожность",
+                    color: .colorSelection8,
                     emoji: "😪",
                     schedule: [WeekDay.saturday],
-                    colorAssetName: "ColorSelection9",
-                    type: .habit
+                    type: .irregularEvent
                 )
             ]
         )
     ]
 }
-

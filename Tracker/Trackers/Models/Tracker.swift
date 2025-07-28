@@ -8,11 +8,10 @@
 import UIKit
 
 struct Tracker {
-    let id: UUID
+    let trackerID: UUID
     let name: String
-    let color: UIColor 
+    let color: UIColor
     let emoji: String
-    let schedule: [WeekDay]?
-    let colorAssetName: String
+    let schedule: [WeekDay]
     let type: TypeTrackers
 }

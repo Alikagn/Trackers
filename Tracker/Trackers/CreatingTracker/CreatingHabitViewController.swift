@@ -128,17 +128,15 @@ private extension CreatingHabitViewController {
     @objc func didTapCancelButton() {
         dismiss(animated: true)
     }
-
     
     @objc func didTapCreateButton() {
         guard let trackerName = ui.trackerNameTextField.text else { return }
         let tracker = Tracker(
-            id: UUID(),
+            trackerID: UUID(),
             name: trackerName,
             color: selectedColor ?? UIColor.black,
             emoji: selectedEmoji ?? String(),
             schedule: scheduleDay,
-            colorAssetName: "ColorSelection10",
             type: isHabit ? .habit : .irregularEvent
         )
         dismiss(animated: true) { [weak self] in
@@ -585,11 +583,5 @@ extension CreatingHabitViewController {
         view.backgroundColor = .ypWhite
         setupNavBar()
         stackSubView()
-    }
-}
-
-extension Colors {
-    static func colorName(for color: UIColor) -> String? {
-        trackerColors.firstIndex { $0.isEqual(color) }.map { "Color selection \($0 + 1)" }
     }
 }

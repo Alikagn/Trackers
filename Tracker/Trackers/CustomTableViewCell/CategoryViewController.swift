@@ -24,6 +24,8 @@ final class CategoryViewController: UIViewController {
     // MARK: Private Property
     
     private var selectedCategories: Set<String> = []
+    private let trackerCategoryStore: TrackerCategoryStoreProtocol = TrackerCategoryStore()
+    private var listOfCategories: [TrackerCategory] = []
     
     private lazy var ui: UI = {
         let ui = createUI()
@@ -36,7 +38,7 @@ final class CategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        updateUIForCategory()
+        addNewTrackerCategory()
     }
 }
 
@@ -72,6 +74,16 @@ private extension CategoryViewController {
             showHiddenImage()
         } else {
             hideHiddenImage()
+        }
+    }
+    
+    func addNewTrackerCategory() {
+        do {
+            listOfCategories = try trackerCategoryStore.getCategories()
+            contentsCategory = listOfCategories.map { $0.headingCategory }
+            updateUIForCategory()
+        } catch {
+            assertionFailure("Failed to get categories with \(error)")
         }
     }
     
@@ -236,12 +248,26 @@ extension CategoryViewController {
 // MARK: - NewCategoryViewControllerDelegate
 
 extension CategoryViewController: NewCategoryViewControllerDelegate {
-    func didCreateNewCategory(withName name: String) {
-        if !contentsCategory.contains(name) {
-            contentsCategory.append(name)
+    func didCreateNewCategory(withName name: TrackerCategory) {
+        do {
+            try trackerCategoryStore.addCategory(name)
+            addNewTrackerCategory()
             ui.categoryTableView.reloadData()
             updateUIForCategory()
+        } catch {
+            assertionFailure("Failed to add category with \(error.localizedDescription)")
         }
+    }
+}
+
+extension CategoryViewController: TrackerCategoryStoreDelegate {
+    func didUpdate(_ update: TrackerCategoryStoreUpdate) {
+        addNewTrackerCategory()
+        ui.categoryTableView.performBatchUpdates {
+            ui.categoryTableView.insertRows(at: update.insertedIndexPaths, with: .automatic)
+            ui.categoryTableView.deleteRows(at: update.deletedIndexPaths, with: .automatic)
+        }
+        updateUIForCategory()
     }
 }
 

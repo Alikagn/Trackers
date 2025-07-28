@@ -9,7 +9,7 @@ import UIKit
 // MARK: - NewCategoryViewControllerDelegate
 
 protocol NewCategoryViewControllerDelegate: AnyObject {
-    func didCreateNewCategory(withName name: String)
+    func didCreateNewCategory(withName name: TrackerCategory)
 }
 
 // MARK: - NewCategoryViewController
@@ -21,18 +21,6 @@ final class NewCategoryViewController: UIViewController {
     weak var delegate: NewCategoryViewControllerDelegate?
     
     // MARK: Private Property
-    
-    private lazy var downButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "arrowshape.down") ?? UIImage(systemName: "arrowshape.down"),
-            style: .plain,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        button.tintColor = Colors.black
-        button.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
-        return button
-    }()
     
     private lazy var ui: UI = {
         let ui = createUI()
@@ -51,13 +39,7 @@ final class NewCategoryViewController: UIViewController {
 // MARK: - Private Methods
 
 private extension NewCategoryViewController {
-    
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
-    }
-    
     func setupNavBar() {
-       // navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Новая категория"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -73,8 +55,10 @@ private extension NewCategoryViewController {
     }
     
     @objc func didTapNewCategoryButton() {
-        let newCategoryName = ui.newCategoryTextField.text ?? ""
-        delegate?.didCreateNewCategory(withName: newCategoryName)
+        if let newCategoryName = ui.newCategoryTextField.text, !newCategoryName.isEmpty {
+            let newCategory = TrackerCategory(headingCategory: newCategoryName, trackers: [])
+            delegate?.didCreateNewCategory(withName: newCategory)
+        }
         dismiss(animated: true)
     }
 }
@@ -89,9 +73,9 @@ extension NewCategoryViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         ui.newCategoryButton.isEnabled = isSubmitButtonEnabled()
         if ui.newCategoryButton.isEnabled {
-            ui.newCategoryButton.backgroundColor = Colors.black
+            ui.newCategoryButton.backgroundColor = .ypBlack
         } else {
-            ui.newCategoryButton.backgroundColor = Colors.gray
+            ui.newCategoryButton.backgroundColor = .ypGray
         }
         return true
     }
@@ -114,11 +98,11 @@ extension NewCategoryViewController {
         
         let newCategoryTextField = UITextField()
         newCategoryTextField.translatesAutoresizingMaskIntoConstraints = false
-        newCategoryTextField.placeholder = "Введите название категории"
+        newCategoryTextField.placeholder = "  Введите название категории"
         newCategoryTextField.layer.cornerRadius = 16
-        newCategoryTextField.leftPadding(16)
-        newCategoryTextField.backgroundColor = Colors.background
+        newCategoryTextField.backgroundColor = .ypBackground
         newCategoryTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        newCategoryTextField.leftPadding(16)
         newCategoryTextField.delegate = self
         view.addSubview(newCategoryTextField)
         
@@ -126,9 +110,9 @@ extension NewCategoryViewController {
         newCategoryButton.translatesAutoresizingMaskIntoConstraints = false
         newCategoryButton.isEnabled = false
         newCategoryButton.layer.cornerRadius = 16
-        newCategoryButton.backgroundColor = Colors.gray
+        newCategoryButton.backgroundColor = .ypGray
         newCategoryButton.setTitle("Добавить категорию", for: .normal)
-        newCategoryButton.setTitleColor(Colors.white, for: .normal)
+        newCategoryButton.setTitleColor(.ypWhite, for: .normal)
         newCategoryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         newCategoryButton.addTarget(
             self,
@@ -162,7 +146,7 @@ extension NewCategoryViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = Colors.white
+        view.backgroundColor = .ypWhite
         setupNavBar()
         print(ui.newCategoryTextField.text ?? String())
     }

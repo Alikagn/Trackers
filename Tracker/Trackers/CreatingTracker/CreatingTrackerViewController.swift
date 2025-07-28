@@ -18,39 +18,22 @@ protocol CreatingTrackerViewControllerDelegate: AnyObject {
 final class CreatingTrackerViewController: UIViewController {
     
     // MARK: Public Property
-    var onTrackerCreated: ((Tracker) -> Void)?
+    
     weak var delegate: TrackersViewControllerDelegate?
     
     // MARK: Private Property
-    private lazy var downButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "arrowshape.down") ?? UIImage(systemName: "arrowshape.down"),
-            style: .plain,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        button.tintColor = Colors.black
-        button.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
-        return button
-    }()
     
     private lazy var ui: UI = {
         let ui = createUI()
         layout(ui)
         return ui
     }()
-
     
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-    }
-    
-   
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
     }
 }
 
@@ -59,7 +42,6 @@ final class CreatingTrackerViewController: UIViewController {
 private extension CreatingTrackerViewController {
     
     func setupNavBar() {
-       // navigationItem.leftBarButtonItem = downButton
         title = "Создание трекера"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -72,13 +54,12 @@ private extension CreatingTrackerViewController {
     
     @objc func didTapHabitButton() {
         let controller = CreatingHabitViewController(isHabit: true)
-        // input
         let navigationController = UINavigationController(rootViewController: controller)
         controller.delegate = self
         navigationController.modalPresentationStyle = .popover
         self.present(navigationController, animated: true)
     }
-   
+    
     @objc func didTapIrregularEventButton() {
         let controller = CreatingHabitViewController(isHabit: false)
         let navigationController = UINavigationController(rootViewController: controller)
@@ -86,9 +67,7 @@ private extension CreatingTrackerViewController {
         navigationController.modalPresentationStyle = .popover
         self.present(navigationController, animated: true)
     }
-    
 }
-
 
 // MARK: - CreatingTrackerViewControllerDelegate
 
@@ -101,7 +80,6 @@ extension CreatingTrackerViewController: CreatingTrackerViewControllerDelegate {
         }
     }
 }
-
 
 // MARK: - UI Configuring
 
@@ -125,13 +103,11 @@ extension CreatingTrackerViewController {
         habitButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         habitButton.setTitle("Привычка", for: .normal)
         habitButton.layer.cornerRadius = 16
-        
         habitButton.addTarget(
             self,
             action: #selector(didTapHabitButton),
             for: .touchUpInside
         )
-        
         view.addSubview(habitButton)
         
         let irregularEventButton = UIButton(type: .system)
@@ -141,13 +117,11 @@ extension CreatingTrackerViewController {
         irregularEventButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         irregularEventButton.setTitle("Нерегулярное событие", for: .normal)
         irregularEventButton.layer.cornerRadius = 16
-        
         irregularEventButton.addTarget(
             self,
             action: #selector(didTapIrregularEventButton),
             for: .touchUpInside
         )
-        
         view.addSubview(irregularEventButton)
         
         return .init(
@@ -175,7 +149,7 @@ extension CreatingTrackerViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = Colors.white
+        view.backgroundColor = .ypWhite
         setupNavBar()
         print(ui.habitButton.titleLabel?.text ?? String())
     }

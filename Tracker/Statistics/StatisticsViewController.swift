@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StatisticViewController: UIViewController, UICollectionViewDelegate {
+class StatisticsViewController: UIViewController, UICollectionViewDelegate {
     
     private let cellIdentifier = "cell"
 
@@ -52,7 +52,7 @@ class StatisticViewController: UIViewController, UICollectionViewDelegate {
 
 }
 
-extension StatisticViewController {
+extension StatisticsViewController {
     private func setConstraints() {
         NSLayoutConstraint.activate([
                 questionLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),

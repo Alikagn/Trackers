@@ -26,18 +26,6 @@ final class ScheduleViewController: UIViewController {
     
     private var weekdays: [WeekDay] = []
     
-    private lazy var downButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "arrowshape.down") ?? UIImage(systemName: "arrowshape.down"),
-            style: .plain,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        button.tintColor = Colors.black
-        button.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
-        return button
-    }()
-    
     private lazy var ui: UI = {
         let ui = createUI()
         layout(ui)
@@ -56,12 +44,7 @@ final class ScheduleViewController: UIViewController {
 
 private extension ScheduleViewController {
     
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
-    }
-    
     func setupNavBar() {
-        //navigationItem.leftBarButtonItem = downButton
         navigationItem.title = "Расписание"
         
         if let navigationBar = navigationController?.navigationBar {
@@ -114,7 +97,7 @@ extension ScheduleViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.reuseIdentifier, for: indexPath) as? CustomTableViewCell else { return UITableViewCell() }
-        cell.backgroundColor = Colors.background
+        cell.backgroundColor = .ypBackground
         let switchButton = UISwitch(frame: .zero)
         let switchIsOn = currentSchedule.contains(WeekDay.allCases[indexPath.row])
         switchButton.setOn(switchIsOn, animated: true)
@@ -195,7 +178,7 @@ extension ScheduleViewController {
     }
     
     func setupUI() {
-        view.backgroundColor = Colors.white
+        view.backgroundColor = .ypWhite
         print(ui.donebutton.titleLabel?.text)
         setupNavBar()
     }

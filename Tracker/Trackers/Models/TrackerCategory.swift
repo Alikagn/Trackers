@@ -8,8 +8,7 @@
 import Foundation
 
 struct TrackerCategory {
-    let id: UUID
-    let title: String
+    let headingCategory: String
     let trackers: [Tracker]
 }
 
@@ -17,6 +16,6 @@ struct TrackerCategory {
 
 extension TrackerCategory: Equatable {
     static func == (lhs: TrackerCategory, rhs: TrackerCategory) -> Bool {
-        lhs.title == rhs.title
+        lhs.headingCategory == rhs.headingCategory
     }
 }
