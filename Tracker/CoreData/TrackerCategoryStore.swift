@@ -31,9 +31,9 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 
 protocol TrackerCategoryStoreProtocol {
     func setDelegate(_ delegate: TrackerCategoryStoreDelegate)
-    func getCategories() throws -> [TrackerCategory]
+    func getCategories(completion: @escaping ([TrackerCategory]) -> Void)
     func fetchCategoryCoreData(for category: TrackerCategory) throws -> TrackerCategoryCoreData
-    func addCategory(_ category: TrackerCategory) throws
+    func addCategory(_ category: TrackerCategory, completion: @escaping (Error?) -> Void)
 }
 
 // MARK: - TrackerCategoryStore
@@ -178,7 +178,13 @@ extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
         deletedIndexPaths.removeAll()
     }
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    func controller(
+        _ controller: NSFetchedResultsController<NSFetchRequestResult>,
+        didChange anObject: Any,
+        at indexPath: IndexPath?,
+        for type: NSFetchedResultsChangeType,
+        newIndexPath: IndexPath?
+    ) {
         switch type {
         case .insert:
             if let indexPath = newIndexPath {
@@ -202,15 +208,32 @@ extension TrackerCategoryStore: TrackerCategoryStoreProtocol {
         self.delegate = delegate
     }
     
-    func getCategories() throws -> [TrackerCategory] {
-        try fetchCategories()
+    func getCategories(completion: @escaping ([TrackerCategory]) -> Void) {
+        do {
+            let categories = try fetchCategories()
+            completion(categories)
+        } catch {
+            print("Failed to fetch categories with error: \(error)")
+            completion([])
+        }
     }
-    
+
     func fetchCategoryCoreData(for category: TrackerCategory) throws -> TrackerCategoryCoreData {
-        try fetchTrackerCategoryCoreData(for: category)
+        do {
+            let categoryCoreData = try fetchTrackerCategoryCoreData(for: category)
+            return categoryCoreData
+        } catch {
+            throw error
+        }
     }
-    
-    func addCategory(_ category: TrackerCategory) throws {
-        try addNewCategory(category)
+
+    func addCategory(_ category: TrackerCategory, completion: @escaping (Error?) -> Void) {
+        do {
+            try addNewCategory(category)
+            completion(nil)
+        } catch {
+            print("Failed to add category with error: \(error)")
+            completion(error)
+        }
     }
 }

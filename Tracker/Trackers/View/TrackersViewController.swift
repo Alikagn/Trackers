@@ -5,6 +5,7 @@
 //  Created by Dmitry Batorevich on 19.06.2025.
 //
 
+
 import UIKit
 
 // MARK: - TrackersViewControllerDelegate
@@ -29,7 +30,11 @@ final class TrackersViewController: UIViewController {
     private var completedTrackers: [TrackerRecord] = []
     private var currentDate: Date = Date()
     
-    private let dataManager = DataManager.shared
+    
+    
+    private var isEmptyState: Bool { // new
+        visibleCategories.isEmpty
+    }
     
     private lazy var ui: UI = {
         let ui = createUI()
@@ -53,18 +58,23 @@ final class TrackersViewController: UIViewController {
 private extension TrackersViewController {
     
     func reloadData() {
-        do {
-            categories = try trackerCategoryStore.getCategories()
-            datePickerValueChanged()
-        } catch {
-            assertionFailure("Failed to get categories with \(error)")
+        trackerCategoryStore.getCategories { [weak self] categories in
+            guard let self else { return }
+            self.categories = categories
+            self.datePickerValueChanged()
+            self.reloadVisibleCategories()
         }
-        reloadVisibleCategories()
     }
     
-    func isTrackerComplitedToday(id: UUID) -> Bool {
-        completedTrackers.contains { trackerRecord in
-            isSameTrackerRecord(trackerRecord: trackerRecord, id: id)
+    
+    func isTrackerComplitedToday(id: UUID, tracker: Tracker) -> Bool {
+        do {
+            return try trackerRecordStore.recordsFetch(for: tracker).contains { trackerRecord in
+                isSameTrackerRecord(trackerRecord: trackerRecord, id: id)
+            }
+        } catch {
+            assertionFailure("Failed to get records for tracker")
+            return false
         }
     }
     
@@ -160,6 +170,15 @@ private extension TrackersViewController {
         return calendar.isDateInToday(date)
     }
     
+    func getRecords(for tracker: Tracker) -> [TrackerRecord] {
+        do {
+            return try trackerRecordStore.recordsFetch(for: tracker)
+        } catch {
+            assertionFailure("Failed to get records for tracker")
+            return []
+        }
+    }
+    
     @objc func didTapPlusButton() {
         let controller = CreatingTrackerViewController()
         controller.delegate = self
@@ -200,7 +219,6 @@ extension TrackersViewController: UICollectionViewDelegate {
         guard indexPaths.count > .zero else {
             return nil
         }
-        let indexPath = indexPaths.first
         return UIContextMenuConfiguration(actionProvider: { actions in
             return UIMenu(children: [])
         })
@@ -230,15 +248,15 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         cell.delegate = self
         
-        let isComplitedToday = isTrackerComplitedToday(id: tracker.trackerID)
-        let isComplitedDay = completedTrackers.filter {
+        let isCompletedToday = isTrackerComplitedToday(id: tracker.trackerID, tracker: tracker)
+        let isCompletedDay = getRecords(for: tracker).filter ({
             $0.trackerRecordID == tracker.trackerID
-        }.count
+        }).count
         
         cell.schedule(
             tracker: tracker,
-            isCompletedToday: isComplitedToday,
-            completedDays: isComplitedDay,
+            isCompletedToday: isCompletedToday,
+            completedDays: isCompletedDay,
             indexPath: indexPath
         )
         
@@ -252,11 +270,13 @@ extension TrackersViewController: UICollectionViewDataSource {
     ) -> UICollectionReusableView {
         guard let view = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
-            withReuseIdentifier: SupplementaryView.reuseIdentifier,
+            withReuseIdentifier: TrackersSupplementaryView.reuseIdentifier,
             for: indexPath
-        ) as? SupplementaryView else { return UICollectionReusableView() }
+        ) as? TrackersSupplementaryView else { return UICollectionReusableView() }
         
-        view.showNewTracker(with: visibleCategories.isEmpty ? "" : visibleCategories[indexPath.section].headingCategory)
+        view.showNewTracker(
+            with: visibleCategories.isEmpty ? String() : visibleCategories[indexPath.section].headingCategory
+        )
         return view
     }
 }
@@ -305,8 +325,10 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
         if !isCurrentDate(ui.datePicker.date) && ui.datePicker.date > Date() { return }
         
         let trackerRecord = TrackerRecord(trackerRecordID: id, date: ui.datePicker.date)
-        completedTrackers.append(trackerRecord)
-        
+        try? trackerRecordStore.addRecord(
+            with: trackerRecord.trackerRecordID,
+            by: trackerRecord.date
+        )
         ui.collectionView.reloadItems(at: [indexPath])
     }
     
@@ -314,9 +336,11 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
         
         if !isCurrentDate(ui.datePicker.date) && ui.datePicker.date > Date() { return }
         
-        completedTrackers.removeAll { trackerRecord in
-            isSameTrackerRecord(trackerRecord: trackerRecord, id: id)
-        }
+        let trackerRecord = TrackerRecord(trackerRecordID: id, date: ui.datePicker.date)
+        try? trackerRecordStore.deleteRecord(
+            with: trackerRecord.trackerRecordID,
+            by: trackerRecord.date
+        )
         ui.collectionView.reloadItems(at: [indexPath])
     }
 }
@@ -330,6 +354,8 @@ extension TrackersViewController: TrackersViewControllerDelegate {
             categories.append(TrackerCategory(headingCategory: category, trackers: [tracker]))
             updateUIForCategory()
             reloadVisibleCategories()
+            hideHiddenImage()
+            reloadData()
         } catch {
             assertionFailure("Failed to add tracker to Core Data: \(error)")
         }
@@ -362,14 +388,14 @@ extension TrackersViewController: TrackerStoreDelegate {
 
 // MARK: - UI Configuring
 
-extension TrackersViewController {
+private extension TrackersViewController {
     
     // MARK: UI components
     
     struct UI {
         let plusButton: UIButton
         let datePicker: UIDatePicker
-        let treckerLabel: UILabel
+        let trackerLabel: UILabel
         let searchTextField: UISearchTextField
         let collectionView: UICollectionView
         let lackOfTrackersImageView: UIImageView
@@ -407,12 +433,12 @@ extension TrackersViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
         view.addSubview(datePicker)
         
-        let treckerLabel = UILabel()
-        treckerLabel.translatesAutoresizingMaskIntoConstraints = false
-        treckerLabel.text = "Трекеры"
-        treckerLabel.font = FontsConstants.treckerLabel
-        treckerLabel.textColor = .ypBlack
-        view.addSubview(treckerLabel)
+        let trackerLabel = UILabel()
+        trackerLabel.translatesAutoresizingMaskIntoConstraints = false
+        trackerLabel.text = "Трекеры"
+        trackerLabel.font = FontsConstants.trackerLabel
+        trackerLabel.textColor = .ypBlack
+        view.addSubview(trackerLabel)
         
         let searchTextField = UISearchTextField()
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -435,9 +461,9 @@ extension TrackersViewController {
             forCellWithReuseIdentifier: TrackerCollectionViewCell.reuseIdentifier
         )
         collectionView.register(
-            SupplementaryView.self,
+            TrackersSupplementaryView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: SupplementaryView.reuseIdentifier
+            withReuseIdentifier: TrackersSupplementaryView.reuseIdentifier
         )
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -471,7 +497,7 @@ extension TrackersViewController {
         return .init(
             plusButton: plusButton,
             datePicker: datePicker,
-            treckerLabel: treckerLabel,
+            trackerLabel: trackerLabel,
             searchTextField: searchTextField,
             collectionView: collectionView,
             lackOfTrackersImageView: lackOfTrackersImageView,
@@ -497,13 +523,13 @@ extension TrackersViewController {
             ui.datePicker.topAnchor.constraint(equalTo: view.topAnchor, constant: 49),
             ui.datePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            ui.treckerLabel.widthAnchor.constraint(equalToConstant: 254),
-            ui.treckerLabel.heightAnchor.constraint(equalToConstant: 41),
-            ui.treckerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
-            ui.treckerLabel.leadingAnchor.constraint(equalTo: ui.plusButton.leadingAnchor, constant: 10),
+            ui.trackerLabel.widthAnchor.constraint(equalToConstant: 254),
+            ui.trackerLabel.heightAnchor.constraint(equalToConstant: 41),
+            ui.trackerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
+            ui.trackerLabel.leadingAnchor.constraint(equalTo: ui.plusButton.leadingAnchor, constant: 10),
             
             ui.searchTextField.heightAnchor.constraint(equalToConstant: 36),
-            ui.searchTextField.topAnchor.constraint(equalTo: ui.treckerLabel.bottomAnchor, constant: 7),
+            ui.searchTextField.topAnchor.constraint(equalTo: ui.trackerLabel.bottomAnchor, constant: 7),
             ui.searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             ui.searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
@@ -542,7 +568,7 @@ private extension TrackersViewController {
     // MARK: FontsConstants
     
     enum FontsConstants {
-        static let treckerLabel: UIFont = UIFont.systemFont(ofSize: 34, weight: .bold)
+        static let trackerLabel: UIFont = UIFont.systemFont(ofSize: 34, weight: .bold)
         static let searchTextField: UIFont = UIFont.systemFont(ofSize: 17, weight: .regular)
         static let lackOfTrackersLabel: UIFont = UIFont.systemFont(ofSize: 12, weight: .medium)
     }
@@ -551,7 +577,7 @@ private extension TrackersViewController {
     
     enum ImageConstants {
         static let plusButton: UIImage? = UIImage(named: "plus")
-        static let lackOfTrackersImageView = UIImage(named: "LackOfTrackers")
+        static let lackOfTrackersImageView = UIImage(named: "Comet")
         static let trackerNotFoundImageView = UIImage(named: "trackerNotFound")
     }
 }

@@ -23,11 +23,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     static let reuseIdentifier = "TrackerCell"
     weak var delegate: TrackerCollectionViewCellDelegate?
     
+    var onPlusButtonTapped: ((UUID, Date, Bool) -> Void)?
+    
     // MARK: Private Property
     
     private(set) var id: UUID?
     private var isCompletedToday: Bool = false
     private var indexPath: IndexPath?
+    private var completedDays = 0
+    private var currentDate = Date()
     
     private lazy var ui: UI = {
         let ui = createUI()

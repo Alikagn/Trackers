@@ -23,10 +23,9 @@ final class CategoryViewController: UIViewController {
     
     // MARK: Private Property
     
-    private var selectedCategories: Set<String> = []
-    private let trackerCategoryStore: TrackerCategoryStoreProtocol = TrackerCategoryStore()
-    private var listOfCategories: [TrackerCategory] = []
-    
+    private var selectedCategories: Int?
+    private var viewModel: CategoryViewModel?
+
     private lazy var ui: UI = {
         let ui = createUI()
         layout(ui)
@@ -37,6 +36,14 @@ final class CategoryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel = CategoryViewModel(categoryStore: TrackerCategoryStore())
+        viewModel?.updateHandler = { [weak self] in
+            guard let self else { return }
+            ui.categoryTableView.reloadData()
+        }
+        viewModel?.fetchCategories()
+        
         setupUI()
         addNewTrackerCategory()
     }
@@ -70,7 +77,7 @@ private extension CategoryViewController {
     }
     
     func updateUIForCategory() {
-        if contentsCategory.isEmpty {
+        if viewModel?.numberOfCategories() == 0 {
             showHiddenImage()
         } else {
             hideHiddenImage()
@@ -78,13 +85,15 @@ private extension CategoryViewController {
     }
     
     func addNewTrackerCategory() {
-        do {
-            listOfCategories = try trackerCategoryStore.getCategories()
-            contentsCategory = listOfCategories.map { $0.headingCategory }
-            updateUIForCategory()
-        } catch {
-            assertionFailure("Failed to get categories with \(error)")
-        }
+        viewModel?.fetchCategories()
+        updateUIForCategory()
+//        do {
+//            listOfCategories = try trackerCategoryStore.getCategories()
+//            contentsCategory = listOfCategories.map { $0.headingCategory }
+//            updateUIForCategory()
+//        } catch {
+//            assertionFailure("Failed to get categories with \(error)")
+//        }
     }
     
     @objc func didTapNewCategoryButton() {
@@ -104,18 +113,32 @@ extension CategoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         // нажатие на ячейку
-        let categoryName = contentsCategory[indexPath.row]
         
-        if selectedCategories.contains(categoryName) {
-            selectedCategories.remove(categoryName)
-        } else {
-            selectedCategories.insert(categoryName)
-        }
+        selectedCategories = indexPath.row
+        ui.categoryTableView.reloadData()
+        
+        let categoryName = viewModel?.category(at: indexPath.row)
+        let allCategories = viewModel?.categoryNames() ?? []
+
         tableView.reloadRows(at: [indexPath], with: .none)
         delegate?.categoryViewControllerDidSelectCategories(
-            categoryName,
-            categories: contentsCategory
+            categoryName?.headingCategory ?? String(),
+            categories: allCategories
         )
+        navigationController?.popViewController(animated: true)
+       
+//        let categoryName = contentsCategory[indexPath.row]
+//
+//        if selectedCategories.contains(categoryName) {
+//            selectedCategories.remove(categoryName)
+//        } else {
+//            selectedCategories.insert(categoryName)
+//        }
+//        tableView.reloadRows(at: [indexPath], with: .none)
+//        delegate?.categoryViewControllerDidSelectCategories(
+//            categoryName,
+//            categories: contentsCategory
+//        )
     }
 }
 
@@ -124,7 +147,7 @@ extension CategoryViewController: UITableViewDelegate {
 extension CategoryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contentsCategory.count
+        return viewModel?.numberOfCategories() ?? .zero
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -133,11 +156,11 @@ extension CategoryViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdent", for: indexPath)
-        let categoryName = contentsCategory[indexPath.row]
-        cell.textLabel?.text = categoryName
+        let categoryName = viewModel?.category(at: indexPath.row)
+        cell.textLabel?.text = categoryName?.headingCategory
         cell.backgroundColor = .ypBackground
         
-        if selectedCategories.contains(categoryName) {
+        if indexPath.row == selectedCategories {
             cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
@@ -249,14 +272,16 @@ extension CategoryViewController {
 
 extension CategoryViewController: NewCategoryViewControllerDelegate {
     func didCreateNewCategory(withName name: TrackerCategory) {
-        do {
-            try trackerCategoryStore.addCategory(name)
+        viewModel?.addCategory(name)
+
+//        do {
+//            try trackerCategoryStore.addCategory(name)
             addNewTrackerCategory()
             ui.categoryTableView.reloadData()
             updateUIForCategory()
-        } catch {
-            assertionFailure("Failed to add category with \(error.localizedDescription)")
-        }
+//        } catch {
+//            assertionFailure("Failed to add category with \(error.localizedDescription)")
+//        }
     }
 }
 

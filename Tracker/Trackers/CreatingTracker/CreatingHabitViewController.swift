@@ -136,7 +136,7 @@ private extension CreatingHabitViewController {
             name: trackerName,
             color: selectedColor ?? UIColor.black,
             emoji: selectedEmoji ?? String(),
-            schedule: scheduleDay,
+            schedule: isHabit ? scheduleDay : WeekDay.allCases,
             type: isHabit ? .habit : .irregularEvent
         )
         dismiss(animated: true) { [weak self] in
