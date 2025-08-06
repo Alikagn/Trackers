@@ -38,8 +38,14 @@ final class CustomTableViewCell: UITableViewCell {
 
 extension CustomTableViewCell {
     
-    func configure(with text: String, isCategory: Bool, subtitle: String? = nil) {
+    func configure(
+        with text: String,
+        isCategory: Bool,
+        subtitle: String? = nil,
+        isLast: Bool? = nil
+    ) {
         setupUI()
+        ui.separatorLine.isHidden = isLast ?? false
         ui.titleLabel.text = text
         if let subtitle {
             ui.subtitleLabel.text = subtitle

@@ -7,77 +7,69 @@
 
 import UIKit
 
-final class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
-   
+// MARK: - TabBarController
+
+final class TabBarController: UITabBarController {
+    
+    // MARK: Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTabs()
-        setupAppearance()
+        setupViewControllers()
+        setupUI()
     }
-    
-    private func setupTabs() {
-        
-        // Trackers
-        let tabTracker = TrackersViewController()
-        let tabOneBarItem = UITabBarItem(
-            title: "Трекер",
-            image: UIImage(named: "trackers"),
+}
+
+// MARK: - Private Methods
+
+private extension TabBarController {
+    func setupViewControllers() {
+        let trackersViewController = TrackersViewController()
+        trackersViewController.tabBarItem = UITabBarItem(
+            title: "Трекеры",
+            image: ImageConstants.tabTrackerActive,
             selectedImage: nil
         )
         
-        tabTracker.tabBarItem = tabOneBarItem
-        let trackersNavVC = UINavigationController(rootViewController: tabTracker)
-        
-        // Statistics
-        let tabStatistic = StatisticViewController()
-        let tabTwoBarItem = UITabBarItem(
+        let statisticsViewController = StatisticsViewController()
+        statisticsViewController.tabBarItem = UITabBarItem(
             title: "Статистика",
-            image: UIImage(named: "stats"),
+            image: ImageConstants.tabStatisticActive,
             selectedImage: nil
         )
-        
-        tabStatistic.tabBarItem = tabTwoBarItem
-        let statisticsNavVC = UINavigationController(rootViewController: tabStatistic)
-        viewControllers = [trackersNavVC, statisticsNavVC]
-    }
-    
-    private func setupAppearance() {
-        let topline = CALayer()
-        topline.frame = CGRect(x: 0, y: 0, width: self.tabBar.frame.width, height: 1)
-        topline.backgroundColor = UIColor.gray.cgColor
-        self.delegate = self
-        self.tabBar.backgroundColor = UIColor.white
-        self.tabBar.layer.masksToBounds = true
-        self.tabBar.layer.addSublayer(topline)
-    }
-    
-    // UITabBarControllerDelegate method
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print("Выбрано: \(String(describing: viewController.title))")
+        self.viewControllers = [trackersViewController, statisticsViewController]
     }
 }
 
-// MARK: FontsConstants
+// MARK: - UI Configuring
 
-enum FontsConstants {
-    static let startLabelText: UIFont = UIFont.systemFont(ofSize: 32, weight: .bold)
-    static let label: UIFont = UIFont.systemFont(ofSize: 34, weight: .bold)
-    static let searchTextField: UIFont = UIFont.systemFont(ofSize: 17, weight: .regular)
-    static let cometTextLabel: UIFont = UIFont.systemFont(ofSize: 12, weight: .medium)
+private extension TabBarController {
+    func setupUI() {
+        view.backgroundColor = .ypWhite
+        separator()
+    }
+    
+    func separator() {
+        let separator = UIView(frame: CGRect(
+            x: 0,
+            y: -0.5,
+            width: tabBar.frame.width,
+            height: 1
+        ))
+        separator.backgroundColor = .ypGray
+        separator.backgroundColor?.withAlphaComponent(20)
+        tabBar.addSubview(separator)
+    }
 }
 
-/*
- override func viewDidLoad() {
-     super.viewDidLoad()
- // Создание линий:
- let topline = CALayer()
- topline.frame = CGRect(x: 0, y: 0, ширина: self.tabBar.frame.width, высота: 2)
- topline.backgroundColor = UIColor.gray.CGColor
- self.tabBar.layer.addSublayer(topline)
- let firstVerticalLine = CALayer()
- firstVerticalLine.frame = CGRect(x: self.tabBar.frame.width / 5, y: 0, ширина: 2, высота: self.tabBar.frame.height)
- firstVerticalLine.backgroundColor = UIColor.gray.CGColor
- self.tabBar.layer.addSublayer(firstVerticalLine)
- // Продолжать добавлять другие линии для разделения элементов вкладки...
- }
- */
+// MARK: - Constants
+
+private extension TabBarController {
+    
+    // MARK: ImageConstants
+    
+    enum ImageConstants {
+        static let tabTrackerActive = UIImage(named: "trackers")
+        static let tabStatisticActive = UIImage(named: "stats")
+    }
+}

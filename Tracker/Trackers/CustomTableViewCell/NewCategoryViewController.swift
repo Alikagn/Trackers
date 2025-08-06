@@ -9,7 +9,7 @@ import UIKit
 // MARK: - NewCategoryViewControllerDelegate
 
 protocol NewCategoryViewControllerDelegate: AnyObject {
-    func didCreateNewCategory(withName name: String)
+    func didCreateNewCategory(withName name: TrackerCategory)
 }
 
 // MARK: - NewCategoryViewController
@@ -22,18 +22,6 @@ final class NewCategoryViewController: UIViewController {
     
     // MARK: Private Property
     
-    private lazy var downButton: UIBarButtonItem = {
-        let button = UIBarButtonItem(
-            image: UIImage(systemName: "arrowshape.down") ?? UIImage(systemName: "arrowshape.down"),
-            style: .plain,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        button.tintColor = Colors.black
-        button.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 0)
-        return button
-    }()
-    
     private lazy var ui: UI = {
         let ui = createUI()
         layout(ui)
@@ -45,22 +33,12 @@ final class NewCategoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupNavigationBar()
     }
 }
 
 // MARK: - Private Methods
 
 private extension NewCategoryViewController {
-   
-    private func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = downButton
-    }
-    
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
-    }
-    
     func setupNavBar() {
         navigationItem.title = "Новая категория"
         
@@ -77,8 +55,10 @@ private extension NewCategoryViewController {
     }
     
     @objc func didTapNewCategoryButton() {
-        let newCategoryName = ui.newCategoryTextField.text ?? ""
-        delegate?.didCreateNewCategory(withName: newCategoryName)
+        if let newCategoryName = ui.newCategoryTextField.text, !newCategoryName.isEmpty {
+            let newCategory = TrackerCategory(headingCategory: newCategoryName, trackers: [])
+            delegate?.didCreateNewCategory(withName: newCategory)
+        }
         dismiss(animated: true)
     }
 }
@@ -122,6 +102,7 @@ extension NewCategoryViewController {
         newCategoryTextField.layer.cornerRadius = 16
         newCategoryTextField.backgroundColor = .ypBackground
         newCategoryTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
+        newCategoryTextField.leftPadding(16)
         newCategoryTextField.delegate = self
         view.addSubview(newCategoryTextField)
         
