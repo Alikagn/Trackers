@@ -4,7 +4,60 @@
 //
 //  Created by Dmitry Batorevich on 16.06.2025.
 //
+import UIKit
 
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    var window: UIWindow?
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        window = UIWindow(windowScene: windowScene)
+        
+        // Проверка, показывать ли стартовый экран
+        let hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
+        
+        if hasSeenOnboarding {
+            // Уже заходили, показать основной интерфейс
+            let tabBarController = TabBarController()
+            window?.rootViewController = tabBarController
+        } else {
+            // Первый запуск, показать стартовый экран
+            let startViewController = StartViewController()
+            startViewController.onboardingCompletionHandler = { [weak self] in
+                // После завершения стартового экрана, сохраняем флаг
+                UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+                let tabBarController = TabBarController()
+                self?.window?.rootViewController = tabBarController
+            }
+            window?.rootViewController = startViewController
+        }
+        
+        window?.makeKeyAndVisible()
+    }
+    
+    func sceneDidDisconnect(_ scene: UIScene) {
+        
+    }
+    
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        
+    }
+    
+    func sceneWillResignActive(_ scene: UIScene) {
+        
+    }
+    
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        
+    }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        
+    }
+}
+
+/*
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -46,3 +99,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 }
+*/
