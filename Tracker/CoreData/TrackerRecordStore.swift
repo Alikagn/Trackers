@@ -74,15 +74,21 @@ private extension TrackerRecordStore {
     }
     
     func fetchTrackerRecordCoreData(for trackerID: UUID, and date: Date) throws -> TrackerRecordCoreData? {
-        let request = TrackerRecordCoreData.fetchRequest()
-        request.returnsObjectsAsFaults = false
-        request.predicate = NSPredicate(
-            format: "%K = %@ AND %K = %@",
-            #keyPath(TrackerRecordCoreData.trackers.trackerID), trackerID as CVarArg,
-            #keyPath(TrackerRecordCoreData.date), date as CVarArg
-        )
-        return try context.fetch(request).first
-    }
+            let calendar = Calendar.current
+            let startOfDay = calendar.startOfDay(for: date)
+            guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
+                return nil
+            }
+
+            let request = TrackerRecordCoreData.fetchRequest()
+            request.returnsObjectsAsFaults = false
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                NSPredicate(format: "%K = %@", #keyPath(TrackerRecordCoreData.trackerRecordID), trackerID as CVarArg),
+                NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
+            ])
+
+            return try context.fetch(request).first
+        }
     
     func saveContext() throws {
         guard context.hasChanges else { return }

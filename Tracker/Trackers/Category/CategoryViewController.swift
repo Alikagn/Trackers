@@ -4,6 +4,7 @@
 //
 //  Created by Dmitry Batorevich on 12.07.2025.
 //
+
 import UIKit
 
 // MARK: - CategoryViewControllerDelegate
@@ -87,13 +88,6 @@ private extension CategoryViewController {
     func addNewTrackerCategory() {
         viewModel?.fetchCategories()
         updateUIForCategory()
-//        do {
-//            listOfCategories = try trackerCategoryStore.getCategories()
-//            contentsCategory = listOfCategories.map { $0.headingCategory }
-//            updateUIForCategory()
-//        } catch {
-//            assertionFailure("Failed to get categories with \(error)")
-//        }
     }
     
     @objc func didTapNewCategoryButton() {
@@ -126,19 +120,6 @@ extension CategoryViewController: UITableViewDelegate {
             categories: allCategories
         )
         navigationController?.popViewController(animated: true)
-       
-//        let categoryName = contentsCategory[indexPath.row]
-//
-//        if selectedCategories.contains(categoryName) {
-//            selectedCategories.remove(categoryName)
-//        } else {
-//            selectedCategories.insert(categoryName)
-//        }
-//        tableView.reloadRows(at: [indexPath], with: .none)
-//        delegate?.categoryViewControllerDidSelectCategories(
-//            categoryName,
-//            categories: contentsCategory
-//        )
     }
 }
 
@@ -274,14 +255,10 @@ extension CategoryViewController: NewCategoryViewControllerDelegate {
     func didCreateNewCategory(withName name: TrackerCategory) {
         viewModel?.addCategory(name)
 
-//        do {
-//            try trackerCategoryStore.addCategory(name)
             addNewTrackerCategory()
             ui.categoryTableView.reloadData()
             updateUIForCategory()
-//        } catch {
-//            assertionFailure("Failed to add category with \(error.localizedDescription)")
-//        }
+
     }
 }
 

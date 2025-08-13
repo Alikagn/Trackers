@@ -94,53 +94,6 @@ final class TrackerStore: NSObject {
     }
 }
 
-/*
-// MARK: - Public Methods
-
- func addTracker(_ tracker: Tracker, to category: TrackerCategory) throws {
-    guard !tracker.name.isEmpty else {
-        throw NSError(domain: "Validation", code: 400, userInfo: [NSLocalizedDescriptionKey: "Название трекера не может быть пустым"])
-    }
-    
-    guard !trackerExists(name: tracker.name, in: category) else {
-        throw NSError(domain: "Validation", code: 409, userInfo: [NSLocalizedDescriptionKey: "Трекер с таким названием уже существует в этой категории"])
-    }
-    
-    let trackerEntity = TrackerCoreData(context: context)
-    trackerEntity.id = tracker.id
-    trackerEntity.name = tracker.name
-    trackerEntity.emoji = tracker.emoji
-    trackerEntity.color = UIColor(named: tracker.color)
-    trackerEntity.colorAssetName = tracker.color
-    trackerEntity.schedule = tracker.schedule as NSObject
-    
-    let categoryRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-    categoryRequest.predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
-    
-    if let categoryEntity = try? context.fetch(categoryRequest).first {
-        trackerEntity.category = categoryEntity
-    }
-    
-    saveContext()
-}
- 
- func fetchTrackers() -> [Tracker] {
-     guard let trackerObjects = fetchedResultsController?.fetchedObjects else { return [] }
-     return trackerObjects.compactMap { createTracker(from: $0) }
- }
- 
- func deleteTracker(_ tracker: Tracker) throws {
-     let request = TrackerCoreData.fetchRequest()
-     request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
-     
-     guard let trackerToDelete = try? context.fetch(request).first else {
-         throw NSError(domain: "Tracker", code: 404, userInfo: [NSLocalizedDescriptionKey: "Трекер не найден"])
-     }
-     
-     context.delete(trackerToDelete)
-     saveContext()
- }
-*/
 // MARK: - Private Methods
 
 extension TrackerStore {
@@ -167,70 +120,19 @@ extension TrackerStore {
     }
     
     func addTracker(tracker: Tracker, category: TrackerCategory) throws {
-        guard !tracker.name.isEmpty else {
-            throw NSError(domain: "Validation", code: 400, userInfo: [NSLocalizedDescriptionKey: "Название трекера не может быть пустым"])
-        }
-        
-        guard !trackerExists(name: tracker.name, in: category) else {
-            throw NSError(domain: "Validation", code: 409, userInfo: [NSLocalizedDescriptionKey: "Трекер с таким названием уже существует в этой категории"])
-        }
-        
         let trackerCategoryCoreData = try trackerCategoryStore.fetchCategoryCoreData(for: category)
-        let trackerEntity = TrackerCoreData(context: context)
-        trackerEntity.trackerID = tracker.trackerID
-        trackerEntity.name = tracker.name
-        trackerEntity.emoji = tracker.emoji
-        trackerEntity.color = uiColorMarshalling.hexString(from: tracker.color)
-        trackerEntity.schedule = WeekDay.calculateScheduleValue(for: tracker.schedule)
+        let trackerCoreData = TrackerCoreData(context: context)
         
-        let categoryRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        categoryRequest.predicate = NSPredicate(format: "headingCategory == %@", category.headingCategory as CVarArg)
-        
-        if let categoryEntity = try? context.fetch(categoryRequest).first {
-            trackerEntity.category = categoryEntity
-        }
+        trackerCoreData.trackerID = tracker.trackerID
+        trackerCoreData.name = tracker.name
+        trackerCoreData.color = uiColorMarshalling.hexString(from: tracker.color)
+        trackerCoreData.emoji = tracker.emoji
+        trackerCoreData.schedule = WeekDay.calculateScheduleValue(for: tracker.schedule)
+        trackerCoreData.category = trackerCategoryCoreData
         
         try saveContext()
     }
     
-    private func trackerExists(name: String, in category: TrackerCategory) -> Bool {
-        let request = TrackerCoreData.fetchRequest()
-        request.predicate = NSPredicate(
-            format: "name == %@ AND category.headingCategory == %@",
-            name,
-            category.headingCategory as CVarArg
-        )
-        return (try? context.count(for: request)) ?? 0 > 0
-    }
-    
-    /*
-    func addTracker(_ tracker: Tracker, to category: TrackerCategory) throws {
-       guard !tracker.name.isEmpty else {
-           throw NSError(domain: "Validation", code: 400, userInfo: [NSLocalizedDescriptionKey: "Название трекера не может быть пустым"])
-       }
-       
-       guard !trackerExists(name: tracker.name, in: category) else {
-           throw NSError(domain: "Validation", code: 409, userInfo: [NSLocalizedDescriptionKey: "Трекер с таким названием уже существует в этой категории"])
-       }
-       
-       let trackerEntity = TrackerCoreData(context: context)
-       trackerEntity.id = tracker.id
-       trackerEntity.name = tracker.name
-       trackerEntity.emoji = tracker.emoji
-       trackerEntity.color = UIColor(named: tracker.color)
-       trackerEntity.colorAssetName = tracker.color
-       trackerEntity.schedule = tracker.schedule as NSObject
-       
-       let categoryRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-       categoryRequest.predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
-       
-       if let categoryEntity = try? context.fetch(categoryRequest).first {
-           trackerEntity.category = categoryEntity
-       }
-       
-       saveContext()
-   }
-   */
     func saveContext() throws {
         guard context.hasChanges else {
             print("Нет изменений для сохранения")

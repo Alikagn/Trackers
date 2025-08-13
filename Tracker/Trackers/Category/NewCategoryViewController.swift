@@ -4,6 +4,7 @@
 //
 //  Created by Dmitry Batorevich on 12.07.2025.
 //
+
 import UIKit
 
 // MARK: - NewCategoryViewControllerDelegate
@@ -63,6 +64,8 @@ private extension NewCategoryViewController {
     }
 }
 
+// MARK: - UITextFieldDelegate
+
 extension NewCategoryViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -83,7 +86,7 @@ extension NewCategoryViewController: UITextFieldDelegate {
 
 // MARK: - UI Configuring
 
-extension NewCategoryViewController {
+private extension NewCategoryViewController {
     
     // MARK: UI components
     
@@ -166,6 +169,6 @@ private extension CategoryViewController {
     
     enum ImageConstants {
         static let plusButton = UIImage(named: "plus") ?? UIImage()
-        static let lackOfTrackersImageView = UIImage(named: "lackOfTrackers")
+        static let lackOfTrackersImageView = UIImage(named: "Comet")
     }
 }
