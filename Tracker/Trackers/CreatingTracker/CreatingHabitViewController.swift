@@ -4,7 +4,6 @@
 //
 //  Created by Dmitry Batorevich on 12.07.2025.
 //
-
 import UIKit
 
 // MARK: - CreatingHabitViewController
@@ -15,9 +14,19 @@ final class CreatingHabitViewController: UIViewController {
     
     weak var delegate: CreatingTrackerViewControllerDelegate?
     
+    var completedDays: Int?
+    var selectedTracker: Tracker?
+    var selectedTrackerCategory: TrackerCategory?
+    
     // MARK: Private Property
     
-    private var contentsTableView = ["Категория", "Расписание"]
+    private var contentsTableView = [
+        NSLocalizedString("category", comment: ""),
+        NSLocalizedString("schedule", comment: "")
+    ]
+    
+    private var selectedWeekdays: [Int: Bool] = [:]
+
     private var scheduleDay: [WeekDay] = []
     private var scheduleCategory = String()
     
@@ -52,23 +61,34 @@ final class CreatingHabitViewController: UIViewController {
         return ui
     }()
     
-    // MARK: Lifecycle
+    // MARK: Constructor
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-    }
-    
-    init(isHabit value: Bool) {
-        self.isHabit = value
+    init(isHabit: Bool, tracker: Tracker? = nil) {
+        self.isHabit = isHabit
+        self.selectedTracker = tracker
+        if let tracker = tracker {
+            categoryText = ""
+            selectedEmoji = tracker.emoji
+            selectedColor = tracker.color
+            scheduleDay = tracker.schedule
+        }
         if !isHabit {
             contentsTableView.removeLast()
         }
         super.init(nibName: nil, bundle: nil)
     }
+
+
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: Lifecycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
     }
 }
 
@@ -86,7 +106,9 @@ private extension CreatingHabitViewController {
     }
     
     func setupNavBar() {
-        navigationItem.title = isHabit ? "Новая привычка" : "Новое нерегулярное событие"
+        navigationItem.title = isHabit ?
+        NSLocalizedString("setupNavBarNewRegular.title", comment: "") :
+        NSLocalizedString("setupNavBarNewIrregular.title", comment: "")
         
         if let navigationBar = navigationController?.navigationBar {
             navigationBar.titleTextAttributes = [
@@ -137,11 +159,17 @@ private extension CreatingHabitViewController {
             color: selectedColor ?? UIColor.black,
             emoji: selectedEmoji ?? String(),
             schedule: isHabit ? scheduleDay : WeekDay.allCases,
-            type: isHabit ? .habit : .irregularEvent
+            //schedule: scheduleDay,
+            type: isHabit ? .habit : .irregularEvent,
+            isPinned: false
         )
         dismiss(animated: true) { [weak self] in
             guard let self else { return }
-            delegate?.sendTracker(tracker: tracker, for: categoryText ?? String())
+            if let existingTracker = self.selectedTracker {
+                self.delegate?.updateTracker(tracker: tracker, for: self.categoryText ?? "")
+            } else {
+                self.delegate?.sendTracker(tracker: tracker, for: self.categoryText ?? "")
+            }
         }
     }
 }
@@ -177,7 +205,6 @@ extension CreatingHabitViewController: UITableViewDelegate {
         
         if indexPath.row == 0 {
             let controller = CategoryViewController()
-            controller.contentsCategory = contentsCategory
             controller.delegate = self
             navigationController = UINavigationController(rootViewController: controller)
             self.present(navigationController, animated: true)
@@ -324,9 +351,9 @@ extension CreatingHabitViewController: UICollectionViewDataSource {
         ) as? CreatingSupplementaryView else { return UICollectionReusableView() }
         
         if indexPath.section == 0 {
-            view.showNewTracker(with: "Emoji")
+            view.showNewTracker(with: NSLocalizedString("emojiTitle.text", comment: ""))
         } else if indexPath.section == 1 {
-            view.showNewTracker(with: "Цвет")
+            view.showNewTracker(with: NSLocalizedString("colorTitle.text", comment: ""))
         }
         return view
     }
@@ -397,7 +424,7 @@ extension CreatingHabitViewController: ScheduleDelegate {
         
         if selectedDaysSet == Set(WeekDay.allCases) {
             // Все дни
-            scheduleText = "Каждый день"
+            scheduleText = NSLocalizedString("selectedAllDay.subText", comment: "")
         } else {
             // Не все
             scheduleText = days.map { $0.shortDay }.joined(separator: ", ")
@@ -414,11 +441,12 @@ extension CreatingHabitViewController: ScheduleDelegate {
 
 // MARK: - UI Configuring
 
-extension CreatingHabitViewController {
+private extension CreatingHabitViewController {
     
     // MARK: UI components
     
     struct UI {
+        let counterLabel: UILabel
         let trackerNameTextField: UITextField
         let contentsTableView: UITableView
         let stackView: UIStackView
@@ -433,9 +461,16 @@ extension CreatingHabitViewController {
     
     func createUI() -> UI {
         
+        let counterLabel = UILabel()
+        counterLabel.translatesAutoresizingMaskIntoConstraints = false
+        counterLabel.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        counterLabel.textColor = .ypBlack
+        counterLabel.textAlignment = .center
+        view.addSubview(counterLabel)
+        
         let trackerNameTextField = UITextField()
         trackerNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        trackerNameTextField.placeholder = "Введите название трекера"
+        trackerNameTextField.placeholder = NSLocalizedString("trackerNameTextField.placeholder", comment: "")
         trackerNameTextField.layer.cornerRadius = 16
         trackerNameTextField.backgroundColor = .ypBackground
         trackerNameTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
@@ -495,7 +530,7 @@ extension CreatingHabitViewController {
         
         let cancelButton = UIButton()
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        cancelButton.setTitle("Отмена", for: .normal)
+        cancelButton.setTitle(NSLocalizedString("cancelButton.setTitle", comment: ""), for: .normal)
         cancelButton.layer.cornerRadius = 16
         cancelButton.layer.borderWidth = 1
         cancelButton.layer.masksToBounds = true
@@ -513,7 +548,7 @@ extension CreatingHabitViewController {
         let createButton = UIButton()
         createButton.translatesAutoresizingMaskIntoConstraints = false
         createButton.isEnabled = false
-        createButton.setTitle("Создать", for: .normal)
+        createButton.setTitle(NSLocalizedString("createButton.setTitle", comment: ""), for: .normal)
         createButton.layer.cornerRadius = 16
         createButton.layer.masksToBounds = true
         createButton.backgroundColor = .ypGray
@@ -527,6 +562,7 @@ extension CreatingHabitViewController {
         view.addSubview(createButton)
         
         return .init(
+            counterLabel: counterLabel,
             trackerNameTextField: trackerNameTextField,
             contentsTableView: contentsTableView,
             stackView: stackView,
@@ -543,6 +579,11 @@ extension CreatingHabitViewController {
     func layout(_ ui: UI) {
         
         NSLayoutConstraint.activate( [
+            ui.counterLabel.topAnchor.constraint(equalTo: ui.contentView.safeAreaLayoutGuide.topAnchor, constant: 24),
+            ui.counterLabel.leadingAnchor.constraint(equalTo: ui.contentView.leadingAnchor, constant: 16),
+            ui.counterLabel.trailingAnchor.constraint(equalTo: ui.contentView.trailingAnchor, constant: -16),
+            ui.counterLabel.heightAnchor.constraint(equalToConstant: 40),
+            
             ui.trackerNameTextField.heightAnchor.constraint(equalToConstant: 75),
             ui.trackerNameTextField.topAnchor.constraint(equalTo: ui.contentView.topAnchor, constant: 24),
             ui.trackerNameTextField.leadingAnchor.constraint(equalTo: ui.contentView.leadingAnchor, constant: 16),
@@ -582,6 +623,39 @@ extension CreatingHabitViewController {
     func setupUI() {
         view.backgroundColor = .ypWhite
         setupNavBar()
-        stackSubView()
-    }
+        
+        if let tracker = selectedTracker {
+                // Это режим редактирования
+                navigationItem.title = NSLocalizedString("Редактирование", comment: "")
+                // Заполните UI значениями трекера
+                ui.trackerNameTextField.text = tracker.name
+                // Выделите выбранный эмодзи
+                if let emojiIndex = emojis.firstIndex(of: tracker.emoji) {
+                    selectedIndexEmoji = emojiIndex
+                    // Обновите UI ячейки, например, перезагрузкой коллекции
+                }
+                // Выделите выбранный цвет
+                if let colorIndex = colors.firstIndex(where: { $0 == tracker.color }) {
+                    selectedIndexColor = colorIndex
+                    // Обновите UI ячейки
+                }
+                // Установите schedule
+                scheduleDay = tracker.schedule
+                // Обновите scheduleText
+                // Можно вызвать delegate или напрямую обновить UI
+                // Например:
+                if scheduleDay.count == WeekDay.allCases.count {
+                    scheduleText = NSLocalizedString("selectedAllDay.subText", comment: "")
+                } else {
+                    scheduleText = scheduleDay.map { $0.shortDay }.joined(separator: ", ")
+                }
+                // Обновите таблицу
+                ui.contentsTableView.reloadData()
+                // Включите кнопку создания
+                ui.createButton.isEnabled = true
+                ui.createButton.backgroundColor = .ypBlack
+            }
+            // Остальной код
+            stackSubView()
+        }
 }

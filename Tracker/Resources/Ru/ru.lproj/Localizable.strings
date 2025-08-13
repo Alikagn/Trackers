@@ -1,0 +1,109 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Dmitry Batorevich on 09.08.2025.
+  
+*/
+
+// MARK: - StartViewController
+
+"startBlueLabelText.title" = "Отслеживайте только то, что хотите";
+"startPinkLabelText.title" = "Даже если это\n не литры воды и йога";
+"startButton.setTitle" = "Вот это технологии!";
+
+// MARK: - TabBarController
+
+"trackersVC.UITabBarItem.title" = "Трекеры";
+"statisticsVC.UITabBarItem.title" = "Статистика";
+
+// MARK: - TrackersViewController
+
+"trackerLabel.text" = "Трекеры";
+"searchTextField.placeholder" = "Поиск";
+"lackOfTrackersLabelT.text" = "Что будем отслеживать?";
+"trackerNotFoundLabel.text" = "Ничего не найдено";
+"deleteTrackerAlert.title" = "Уверены что хотите удалить трекер?";
+"deleteTrackerAlertAction1.title" = "Удалить";
+"deleteTrackerAlertAction2.title" = "Отменить";
+"pinnedCategoryTitle" = "Закрепленные";
+"filtersButton.setTitle" = "Фильтры";
+"viewTitle.text" = "Фильтры";
+"All trackers" = "Все трекеры";
+"Trackers for today" = "Трекеры на сегодня";
+"Completed" = "Завершенные";
+"Not completed" = "Не завершенные";
+
+// MARK: - TrackerCollectionViewCell
+
+"pinAction.title" = "Закрепить";
+"unpinAction.title" = "Открепить";
+"editAction.title" = "Редактировать";
+"deleteAction.title" = "Удалить";
+
+// MARK: - StatisticsViewController
+
+"largeTitleLabel.text" = "Статистика";
+"lackOfStatisticsLabel.text" = "Анализировать пока нечего";
+"Best period" = "Лучший период";
+"Perfect days" = "Идеальные дни";
+"Trackers completed" = "Трекеров завершено";
+"Average value" = "Среднее значение";
+
+// MARK: - CreatingTrackerViewController
+
+"creatingNavigationItem.title" = "Создание трека";
+"regularButton.setTitle" = "Привычка";
+"irregularButton.setTitle" = "Нерегулярные событие";
+
+// MARK: - CreatingHabitViewController
+
+"setupNavBarNewRegular.title" = "Новая привычка";
+"setupNavBarNewIrregular.title" = "Новое нерегулярное событие";
+"selectedAllDay.subText" = "Каждый день";
+"category" = "Категория";
+"schedule" = "Расписание";
+"trackerNameTextField.placeholder" = "Введите название трекера";
+"cancelButton.setTitle" = "Отменить";
+"createButton.setTitle" = "Создать";
+"emojiTitle.text" = "Эмодзи";
+"colorTitle.text" = "Цвет";
+
+// MARK: - ScheduleViewController
+
+"scheduleNavigationItem.title" = "Расписание";
+"doneButton.setTitle" = "Готово";
+
+// MARK: - WeekDay
+
+"Monday" = "Понедельник";
+"Tuesday" = "Вторник";
+"Wednesday" = "Среда";
+"Thursday" = "Четверг";
+"Friday" = "Пятница";
+"Saturday" = "Суббота";
+"Sunday" = "Воскресенье";
+
+"Mon" = "Пн";
+"Tue" = "Вт";
+"Wed" = "Ср";
+"Thu" = "Чт";
+"Fri" = "Пт";
+"Sat" = "Сб";
+"Sun" = "Вс";
+
+// MARK: - CategoryViewController
+
+"categoryButton.setTitle" = "Добавить категорию";
+"lackOfTrackersLabel.text" = "Привычки и события можно\n объединить по смыслу";
+"categoryNavigationItem.title" = "Категория";
+
+// MARK: - NewCategoryViewController
+
+"newCategoryTextField.placeholder" = "Введите название категории";
+"newCategoryButton.setTitle" = "Готово";
+"newCategoryNavigationItem.title" = "Новая категория";
+
+// MARK: - EditingHabitsViewController
+
+"setupNavBarEditingHabits.title" = "Редактирование привычек";

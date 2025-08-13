@@ -55,7 +55,7 @@ final class CategoryViewController: UIViewController {
 private extension CategoryViewController {
     
     func setupNavBar() {
-        navigationItem.title = "Категория"
+        navigationItem.title = NSLocalizedString("categoryNavigationItem.title", comment: "")
         
         if let navigationBar = navigationController?.navigationBar {
             navigationBar.titleTextAttributes = [
@@ -152,7 +152,7 @@ extension CategoryViewController: UITableViewDataSource {
 
 // MARK: - UI Configuring
 
-extension CategoryViewController {
+private extension CategoryViewController {
     
     // MARK: UI components
     
@@ -189,7 +189,7 @@ extension CategoryViewController {
         let lackOfTrackersLabel = UILabel()
         lackOfTrackersLabel.translatesAutoresizingMaskIntoConstraints = false
         lackOfTrackersLabel.numberOfLines = 2
-        lackOfTrackersLabel.text = "Привычки и события можно\n объединить по смыслу"
+        lackOfTrackersLabel.text = NSLocalizedString("lackOfTrackersLabel.text", comment: "")
         lackOfTrackersLabel.textAlignment = .center
         lackOfTrackersLabel.font = FontsConstants.lackOfTrackersLabel
         lackOfTrackersLabel.textColor = .ypBlack
@@ -199,7 +199,7 @@ extension CategoryViewController {
         newCategoryButton.translatesAutoresizingMaskIntoConstraints = false
         newCategoryButton.layer.cornerRadius = 16
         newCategoryButton.backgroundColor = .ypBlack
-        newCategoryButton.setTitle("Добавить категорию", for: .normal)
+        newCategoryButton.setTitle(NSLocalizedString("categoryButton.setTitle", comment: ""), for: .normal)
         newCategoryButton.setTitleColor(.ypWhite, for: .normal)
         newCategoryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         newCategoryButton.addTarget(
@@ -258,9 +258,10 @@ extension CategoryViewController: NewCategoryViewControllerDelegate {
             addNewTrackerCategory()
             ui.categoryTableView.reloadData()
             updateUIForCategory()
-
     }
 }
+
+// MARK: - TrackerCategoryStoreDelegate
 
 extension CategoryViewController: TrackerCategoryStoreDelegate {
     func didUpdate(_ update: TrackerCategoryStoreUpdate) {

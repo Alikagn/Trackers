@@ -4,7 +4,6 @@
 //
 //  Created by Dmitry Batorevich on 23.07.2025.
 //
-
 import CoreData
 import UIKit
 
@@ -31,6 +30,16 @@ final class TrackerRecordStore: NSObject {
     
     private let context: NSManagedObjectContext
     
+    private let schedule: [WeekDay] = [
+        .monday,
+        .tuesday,
+        .wednesday,
+        .thursday,
+        .friday,
+        .saturday,
+        .sunday
+    ]
+    
     // MARK: Lifecycle
     
     convenience override init() {
@@ -42,6 +51,26 @@ final class TrackerRecordStore: NSObject {
         self.context = context
         super.init()
     }
+}
+
+// MARK: - Private Methods
+
+extension TrackerRecordStore {
+    
+    func getNumberOfCompletedTrackers() -> Int {
+        return fetchCompletedRecords().count
+    }
+    
+    func getStats() -> [Int]? {
+        let recordsDict = getSortedRecords()
+        let dates = recordsDict.compactMap { $0["date"] as? Date }
+        let perfectDays = getPerfectDays(from: dates)
+        let bestPeriod = checkStreak(of: dates)
+        let average = getNumberOfCompletedTrackers() / recordsDict.count
+        
+        return [perfectDays, average, bestPeriod]
+    }
+    
 }
 
 // MARK: - Private Methods
@@ -74,21 +103,21 @@ private extension TrackerRecordStore {
     }
     
     func fetchTrackerRecordCoreData(for trackerID: UUID, and date: Date) throws -> TrackerRecordCoreData? {
-            let calendar = Calendar.current
-            let startOfDay = calendar.startOfDay(for: date)
-            guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
-                return nil
-            }
-
-            let request = TrackerRecordCoreData.fetchRequest()
-            request.returnsObjectsAsFaults = false
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                NSPredicate(format: "%K = %@", #keyPath(TrackerRecordCoreData.trackerRecordID), trackerID as CVarArg),
-                NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
-            ])
-
-            return try context.fetch(request).first
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
+            return nil
         }
+        
+        let request = TrackerRecordCoreData.fetchRequest()
+        request.returnsObjectsAsFaults = false
+        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "%K = %@", #keyPath(TrackerRecordCoreData.trackerRecordID), trackerID as CVarArg),
+            NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
+        ])
+        
+        return try context.fetch(request).first
+    }
     
     func saveContext() throws {
         guard context.hasChanges else { return }
@@ -114,6 +143,73 @@ private extension TrackerRecordStore {
         }
         context.delete(trackerRecordCoreData)
         try saveContext()
+    }
+    
+    func fetchCompletedRecords() -> [TrackerRecordCoreData] {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        request.returnsObjectsAsFaults = false
+        
+        do {
+            return try context.fetch(request)
+        } catch {
+            fatalError("Unresolved error \(error), \(error.localizedDescription)")
+        }
+    }
+    
+    func getPerfectDays(from dates: [Date]) -> Int {
+        return dates.filter { date in
+            let weekday = Calendar.current.component(.weekday, from: date)
+            return schedule.contains(where: { $0.rawValue == weekday })
+        }.count
+    }
+    
+    func getSortedRecords() -> [[String: Any]] {
+        let keyPathExp = NSExpression(forKeyPath: "date")
+        let expression = NSExpression(forFunction: "count:", arguments: [keyPathExp])
+        
+        let countDesc = NSExpressionDescription()
+        countDesc.expression = expression
+        countDesc.name = "count"
+        countDesc.expressionResultType = .integer64AttributeType
+        
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "TrackerRecordCoreData")
+        request.returnsObjectsAsFaults = false
+        request.propertiesToGroupBy = ["date"]
+        request.propertiesToFetch = ["date", countDesc]
+        request.resultType = .dictionaryResultType
+        
+        do {
+            let trackerRecords = try context.fetch(request) as! [NSDictionary]
+            return trackerRecords.map { $0 as! [String: Any] }
+        } catch {
+            fatalError("Unresolved error \(error), \(error.localizedDescription)")
+        }
+    }
+    
+    func checkStreak(of dateArray: [Date]) -> Int {
+        let dates = dateArray.sorted()
+        guard dates.count > 0 else { return 0 }
+        let referenceDate = Calendar.current.startOfDay(for: dates.first!)
+        let dayDiffs = dates.map { date in
+            Calendar.current.dateComponents([.day], from: referenceDate, to: date).day!
+        }
+        return maximalConsecutiveNumbers(in: dayDiffs)
+    }
+    
+    func maximalConsecutiveNumbers(in array: [Int]) -> Int {
+        var longest = 0
+        var current = 1
+        for (prev, next) in zip(array, array.dropFirst()) {
+            if next > prev + 1 {
+                current = 1
+            } else if next == prev + 1 {
+                current += 1
+            }
+            if current > longest {
+                longest = current
+            }
+        }
+        return longest
     }
 }
 

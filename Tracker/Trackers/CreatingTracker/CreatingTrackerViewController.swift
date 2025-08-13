@@ -10,6 +10,7 @@ import UIKit
 // MARK: - CreatingTrackerViewControllerDelegate
 
 protocol CreatingTrackerViewControllerDelegate: AnyObject {
+    func updateTracker(tracker: Tracker, for category: String)
     func sendTracker(tracker: Tracker, for category: String)
 }
 
@@ -20,6 +21,7 @@ final class CreatingTrackerViewController: UIViewController {
     // MARK: Public Property
     
     weak var delegate: TrackersViewControllerDelegate?
+    var trackers: [Tracker] = []
     
     // MARK: Private Property
     
@@ -42,7 +44,7 @@ final class CreatingTrackerViewController: UIViewController {
 private extension CreatingTrackerViewController {
     
     func setupNavBar() {
-        title = "Создание трекера"
+        title = NSLocalizedString("creatingNavigationItem.title", comment: "")
         
         if let navigationBar = navigationController?.navigationBar {
             navigationBar.titleTextAttributes = [
@@ -53,7 +55,7 @@ private extension CreatingTrackerViewController {
     }
     
     @objc func didTapHabitButton() {
-        let controller = CreatingHabitViewController(isHabit: true)
+        let controller = CreatingHabitViewController(isHabit: true, tracker: nil)
         let navigationController = UINavigationController(rootViewController: controller)
         controller.delegate = self
         navigationController.modalPresentationStyle = .popover
@@ -61,7 +63,7 @@ private extension CreatingTrackerViewController {
     }
     
     @objc func didTapIrregularEventButton() {
-        let controller = CreatingHabitViewController(isHabit: false)
+        let controller = CreatingHabitViewController(isHabit: false, tracker: nil)
         let navigationController = UINavigationController(rootViewController: controller)
         controller.delegate = self
         navigationController.modalPresentationStyle = .popover
@@ -72,6 +74,14 @@ private extension CreatingTrackerViewController {
 // MARK: - CreatingTrackerViewControllerDelegate
 
 extension CreatingTrackerViewController: CreatingTrackerViewControllerDelegate {
+    func updateTracker(tracker: Tracker, for category: String) {
+        if let index = trackers.firstIndex(where: { $0.trackerID == tracker.trackerID }) {
+            trackers[index] = tracker
+            print("Трекер обновлен: \(tracker.name)")
+        } else {
+            print("Трекер не найден для обновления")
+        }
+    }
     
     func sendTracker(tracker: Tracker, for category: String) {
         dismiss(animated: true) { [weak self] in
@@ -83,7 +93,7 @@ extension CreatingTrackerViewController: CreatingTrackerViewControllerDelegate {
 
 // MARK: - UI Configuring
 
-extension CreatingTrackerViewController {
+private extension CreatingTrackerViewController {
     
     // MARK: UI components
     
@@ -101,7 +111,7 @@ extension CreatingTrackerViewController {
         habitButton.backgroundColor = .ypBlack
         habitButton.setTitleColor(.ypWhite, for: .normal)
         habitButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        habitButton.setTitle("Привычка", for: .normal)
+        habitButton.setTitle(NSLocalizedString("regularButton.setTitle", comment: ""), for: .normal)
         habitButton.layer.cornerRadius = 16
         habitButton.addTarget(
             self,
@@ -115,7 +125,7 @@ extension CreatingTrackerViewController {
         irregularEventButton.backgroundColor = .ypBlack
         irregularEventButton.setTitleColor(.ypWhite, for: .normal)
         irregularEventButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
-        irregularEventButton.setTitle("Нерегулярное событие", for: .normal)
+        irregularEventButton.setTitle(NSLocalizedString("irregularButton.setTitle", comment: ""), for: .normal)
         irregularEventButton.layer.cornerRadius = 16
         irregularEventButton.addTarget(
             self,
