@@ -1,0 +1,107 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Dmitry Batorevich on 09.08.2025.
+  
+*/
+
+"startBlueLabelText.title" = "Track only what you want";
+"startPinkLabelText.title" = "Even if it's not liters of water and yoga";
+"startButton.setTitle" = "These are the technologies!";
+
+// MARK: - TabBarController
+
+"trackersVC.UITabBarItem.title" = "Trackers";
+"statisticsVC.UITabBarItem.title" = "Statistics";
+
+// MARK: - TrackersViewController
+
+"trackerLabel.text" = "Trackers";
+"searchTextField.placeholder" = "Search";
+"lackOfTrackersLabelT.text" = "What are we going to track?";
+"trackerNotFoundLabel.text" = "Nothing was found";
+"deleteTrackerAlert.title" = "Are you sure you want to delete the tracker?";
+"deleteTrackerAlertAction1.title" = "Delete";
+"deleteTrackerAlertAction2.title" = "Cancel";
+"pinnedCategoryTitle" = "Fixed";
+"filtersButton.setTitle" = "Filters";
+"viewTitle.text" = "Filters";
+"All trackers" = "All trackers";
+"Trackers for today" = "Trackers for today";
+"Completed" = "Completed";
+"Not completed" = "Not completed";
+
+// MARK: - TrackerCollectionViewCell
+
+"pinAction.title" = "Pin";
+"unpinAction.title" = "Unpin";
+"editAction.title" = "Edit";
+"deleteAction.title" = "Delete";
+
+// MARK: - StatisticsViewController
+
+"largeTitleLabel.text" = "Statistics";
+"lackOfStatisticsLabel.text" = "There is nothing to analyze yet";
+"Best period" = "Best period";
+"Perfect days" = "Perfect days";
+"Trackers completed" = "Trackers completed";
+"Average value" = "Average value";
+
+// MARK: - CreatingTrackerViewController
+
+"creatingNavigationItem.title" = "Creating a track";
+"regularButton.setTitle" = "Habit";
+"irregularButton.setTitle" = "Irregular events";
+
+// MARK: - CreatingHabitViewController
+
+"setupNavBarNewRegular.title" = "New habit";
+"setupNavBarNewIrregular.title" = "New irregular event";
+"selectedAllDay.subText" = "Every day";
+"category" = "Category";
+"schedule" = "Schedule";
+"trackerNameTextField.placeholder" = "Enter the name of the tracker";
+"cancelButton.setTitle" = "Cancel";
+"createButton.setTitle" = "Create";
+"emojiTitle.text" = "Emoji";
+"colorTitle.text" = "Color";
+
+// MARK: - ScheduleViewController
+
+"scheduleNavigationItem.title" = "Schedule";
+"doneButton.setTitle" = "Done";
+
+// MARK: - WeekDay
+
+"Monday" = "Monday";
+"Tuesday" = "Tuesday";
+"Wednesday" = "Wednesday";
+"Thursday" = "Thursday";
+"Friday" = "Friday";
+"Saturday" = "Saturday";
+"Sunday" = "Sunday";
+
+"Mon" = "Mon";
+"Tue" = "Tue";
+"Wed" = "Wed";
+"Thu" = "Thu";
+"Fri" = "Fri";
+"Sat" = "Sat";
+"Sun" = "Sun";
+
+// MARK: - CategoryViewController
+
+"categoryButton.setTitle" = "Add a category";
+"lackOfTrackersLabel.text" = "Habits and events\ncan be combined in meaning";
+"categoryNavigationItem.title" = "Category";
+
+// MARK: - NewCategoryViewController
+
+"newCategoryTextField.placeholder" = "Enter the name of the category";
+"newCategoryButton.setTitle" = "Done";
+"newCategoryNavigationItem.title" = "New category";
+
+// MARK: - EditingHabitsViewController
+
+"setupNavBarEditingHabits.title" = "Editing habits";

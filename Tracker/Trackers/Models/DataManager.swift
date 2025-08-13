@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+/*
 final class DataManager {
     
     static let shared = DataManager()
@@ -78,3 +78,4 @@ final class DataManager {
         )
     ]
 }
+*/

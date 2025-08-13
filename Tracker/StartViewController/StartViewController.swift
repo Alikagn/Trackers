@@ -57,6 +57,12 @@ final class StartViewController: UIPageViewController {
         setupUI()
         setupControllers()
     }
+    
+    // MARK: - Actions
+    @objc private func finishOnboarding() {
+        UserDefaultsService.shared.hasSeenOnboarding = true
+        view.window?.rootViewController = TabBarController()
+    }
 }
 
 // MARK: - Private Methods

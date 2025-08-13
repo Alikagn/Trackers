@@ -41,7 +41,7 @@ final class NewCategoryViewController: UIViewController {
 
 private extension NewCategoryViewController {
     func setupNavBar() {
-        navigationItem.title = "Новая категория"
+        navigationItem.title = NSLocalizedString("newCategoryNavigationItem.title", comment: "")
         
         if let navigationBar = navigationController?.navigationBar {
             navigationBar.titleTextAttributes = [
@@ -101,7 +101,7 @@ private extension NewCategoryViewController {
         
         let newCategoryTextField = UITextField()
         newCategoryTextField.translatesAutoresizingMaskIntoConstraints = false
-        newCategoryTextField.placeholder = "  Введите название категории"
+        newCategoryTextField.placeholder = NSLocalizedString("newCategoryTextField.placeholder", comment: "")
         newCategoryTextField.layer.cornerRadius = 16
         newCategoryTextField.backgroundColor = .ypBackground
         newCategoryTextField.font = UIFont.systemFont(ofSize: 17, weight: .regular)
@@ -114,7 +114,7 @@ private extension NewCategoryViewController {
         newCategoryButton.isEnabled = false
         newCategoryButton.layer.cornerRadius = 16
         newCategoryButton.backgroundColor = .ypGray
-        newCategoryButton.setTitle("Добавить категорию", for: .normal)
+        newCategoryButton.setTitle(NSLocalizedString("newCategoryButton.setTitle", comment: ""), for: .normal)
         newCategoryButton.setTitleColor(.ypWhite, for: .normal)
         newCategoryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         newCategoryButton.addTarget(
@@ -169,6 +169,6 @@ private extension CategoryViewController {
     
     enum ImageConstants {
         static let plusButton = UIImage(named: "plus") ?? UIImage()
-        static let lackOfTrackersImageView = UIImage(named: "Comet")
+        static let lackOfTrackersImageView = UIImage(named: "lackOfTrackers")
     }
 }

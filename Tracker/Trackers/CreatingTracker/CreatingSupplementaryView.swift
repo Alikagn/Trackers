@@ -23,8 +23,8 @@ final class CreatingSupplementaryView: UICollectionReusableView {
         return ui
     }()
     
-    // MARK: Lifecycle
-    
+    // MARK: Constructor
+
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -45,7 +45,7 @@ extension CreatingSupplementaryView {
 
 // MARK: - UI Configuring
 
-extension CreatingSupplementaryView {
+private extension CreatingSupplementaryView {
     
     // MARK: UI components
     

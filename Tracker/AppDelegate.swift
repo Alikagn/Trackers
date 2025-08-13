@@ -7,6 +7,7 @@
 
 import CoreData
 import UIKit
+import AppMetricaCore
 
 @main
 final class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,6 +23,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
         checkCoreDataInitialization()
+        AnalyticsService.activate()
         return true
     }
     

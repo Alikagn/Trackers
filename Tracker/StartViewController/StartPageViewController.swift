@@ -116,7 +116,7 @@ private extension StartPageViewController {
     // MARK: ImageConstants
     
     enum ImageConstants {
-        static let backgroundImage = UIImage(named: "backgroundBlueImage")
+        static let backgroundImage = UIImage(resource: .backgroundBlue)
     }
 }
 
